@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>If You Skill — Finanzas</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary:       #5B4FCF;
+      --primary-light: #7B6FE8;
+      --income:        #22C55E;
+      --expense:       #EF4444;
+      --bg:            #F5F4FF;
+      --card:          #FFFFFF;
+      --border:        #E5E3F8;
+      --text:          #1E1B3A;
+      --muted:         #6B7280;
+      --shadow:        0 2px 12px rgba(91,79,207,.10);
+      --recur:         #8B5CF6;
+    }
+
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--primary); color: #fff;
+      padding: 0 32px; display: flex; align-items: center;
+      justify-content: space-between; height: 68px;
+      box-shadow: 0 2px 8px rgba(91,79,207,.3);
+    }
+    header h1 { font-size: 1.35rem; font-weight: 700; letter-spacing: .5px; }
+    header span { font-size: .8rem; opacity: .75; }
+
+    /* ── LAYOUT ── */
+    main { max-width: 1100px; margin: 0 auto; padding: 32px 20px; }
+
+    /* ── SUMMARY CARDS ── */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px; margin-bottom: 28px;
+    }
+    .card {
+      background: var(--card); border-radius: 14px; padding: 22px 24px;
+      box-shadow: var(--shadow); border: 1px solid var(--border);
+    }
+    .card .label { font-size: .78rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .6px; margin-bottom: 8px; }
+    .card .amount { font-size: 1.75rem; font-weight: 700; }
+    .card.balance  .amount { color: var(--primary); }
+    .card.income-c .amount { color: var(--income); }
+    .card.expense-c .amount { color: var(--expense); }
+    .card.month-c  .amount { font-size: 1.45rem; }
+    .card .sub { font-size: .78rem; color: var(--muted); margin-top: 4px; }
+
+    /* ── FILTER BAR ── */
+    .filter-bar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 22px; }
+    .filter-bar label { font-size: .85rem; font-weight: 600; color: var(--muted); }
+    .filter-bar select {
+      padding: 7px 12px; border: 1px solid var(--border); border-radius: 8px;
+      background: var(--card); font-size: .9rem; color: var(--text); cursor: pointer;
+    }
+    .filter-bar select:focus { outline: 2px solid var(--primary); }
+
+    /* ── BUTTONS ── */
+    .actions { display: flex; gap: 12px; margin-left: auto; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 10px 20px; border-radius: 10px; font-size: .9rem;
+      font-weight: 600; cursor: pointer; border: none; transition: opacity .15s, transform .1s;
+    }
+    .btn:hover { opacity: .88; transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+    .btn-income  { background: var(--income);  color: #fff; }
+    .btn-expense { background: var(--expense); color: #fff; }
+    .btn-export  { background: var(--card); color: var(--primary); border: 1.5px solid var(--primary); }
+
+    /* ── TABLE ── */
+    .table-card {
+      background: var(--card); border-radius: 14px;
+      box-shadow: var(--shadow); border: 1px solid var(--border); overflow: hidden;
+    }
+    .table-card .table-header {
+      padding: 18px 24px; border-bottom: 1px solid var(--border);
+      font-weight: 700; font-size: 1rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .table-card .table-header span { font-size: .8rem; color: var(--muted); font-weight: 400; }
+    table { width: 100%; border-collapse: collapse; }
+    thead th {
+      background: #F8F7FF; padding: 12px 20px; text-align: left;
+      font-size: .78rem; text-transform: uppercase; letter-spacing: .5px;
+      color: var(--muted); font-weight: 700; border-bottom: 1px solid var(--border);
+    }
+    tbody tr { border-bottom: 1px solid #F3F2FF; transition: background .12s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: #F8F7FF; }
+    tbody td { padding: 13px 20px; font-size: .9rem; }
+    .badge {
+      display: inline-block; padding: 3px 10px; border-radius: 20px;
+      font-size: .75rem; font-weight: 600;
+    }
+    .badge-income  { background: #DCFCE7; color: #16A34A; }
+    .badge-expense { background: #FEE2E2; color: #DC2626; }
+    .badge-recur   { background: #EDE9FE; color: #7C3AED; font-size: .7rem; padding: 2px 7px; margin-left: 5px; }
+    .amount-income  { color: var(--income);  font-weight: 700; }
+    .amount-expense { color: var(--expense); font-weight: 700; }
+    .empty-state { padding: 48px; text-align: center; color: var(--muted); font-size: .95rem; }
+    .empty-state .icon { font-size: 2.5rem; margin-bottom: 10px; }
+
+    .btn-del {
+      background: none; border: none; cursor: pointer; color: #CBD5E1;
+      font-size: 1rem; padding: 4px; border-radius: 6px; transition: color .15s;
+    }
+    .btn-del:hover { color: var(--expense); }
+
+    /* ── MONTHLY ── */
+    .monthly-section { margin-top: 28px; }
+    .monthly-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 12px; padding: 20px 24px;
+    }
+    .month-pill {
+      background: #F8F7FF; border: 1px solid var(--border);
+      border-radius: 10px; padding: 14px 16px;
+    }
+    .month-pill .m-name { font-size: .78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+    .month-pill .m-income  { font-size: .82rem; color: var(--income);  font-weight: 600; }
+    .month-pill .m-expense { font-size: .82rem; color: var(--expense); font-weight: 600; }
+    .month-pill .m-result  { font-size: .92rem; font-weight: 700; margin-top: 6px; }
+    .pos { color: var(--income); }
+    .neg { color: var(--expense); }
+
+    /* ── MODAL ── */
+    .overlay {
+      position: fixed; inset: 0; background: rgba(30,27,58,.5);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 100; opacity: 0; pointer-events: none; transition: opacity .2s;
+      padding: 16px;
+    }
+    .overlay.open { opacity: 1; pointer-events: all; }
+    .modal {
+      background: var(--card); border-radius: 18px; padding: 28px 32px;
+      width: 100%; max-width: 460px; box-shadow: 0 8px 40px rgba(91,79,207,.25);
+      transform: translateY(20px); transition: transform .2s;
+      max-height: 92vh; overflow-y: auto;
+    }
+    .overlay.open .modal { transform: translateY(0); }
+    .modal h2 { margin-bottom: 20px; font-size: 1.15rem; }
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; font-size: .82rem; font-weight: 600; color: var(--muted); margin-bottom: 6px; }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%; padding: 10px 14px; border: 1.5px solid var(--border);
+      border-radius: 9px; font-size: .95rem; color: var(--text);
+      transition: border-color .15s; background: #FAFAFA;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus { outline: none; border-color: var(--primary); background: #fff; }
+    .form-group textarea { resize: vertical; min-height: 60px; }
+    .modal-actions { display: flex; gap: 10px; margin-top: 10px; }
+    .btn-cancel { background: #F1F0FB; color: var(--text); flex: 1; justify-content: center; }
+    .btn-submit { flex: 2; justify-content: center; }
+
+    /* ── RECURRING TOGGLE ── */
+    .recur-row {
+      display: flex; align-items: center; justify-content: space-between;
+      background: #F8F7FF; border: 1.5px solid var(--border);
+      border-radius: 10px; padding: 12px 14px; margin-bottom: 14px;
+      cursor: pointer; user-select: none;
+    }
+    .recur-row:hover { border-color: var(--recur); }
+    .recur-row.active { border-color: var(--recur); background: #EDE9FE; }
+    .recur-row .recur-label { font-size: .9rem; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 8px; }
+    .recur-row .recur-label span { font-size: .78rem; font-weight: 400; color: var(--muted); }
+
+    /* Toggle switch */
+    .toggle { position: relative; width: 40px; height: 22px; flex-shrink: 0; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute; inset: 0; background: #CBD5E1;
+      border-radius: 22px; transition: .25s;
+    }
+    .slider:before {
+      content: ''; position: absolute;
+      height: 16px; width: 16px; left: 3px; bottom: 3px;
+      background: white; border-radius: 50%; transition: .25s;
+      box-shadow: 0 1px 3px rgba(0,0,0,.2);
+    }
+    input:checked + .slider { background: var(--recur); }
+    input:checked + .slider:before { transform: translateX(18px); }
+
+    /* Recurring options panel */
+    .recur-panel {
+      background: #F3F0FF; border: 1.5px solid #C4B5FD;
+      border-radius: 10px; padding: 14px;
+      margin-bottom: 14px; display: none;
+    }
+    .recur-panel.visible { display: block; }
+    .recur-panel .rp-title { font-size: .78rem; font-weight: 700; color: var(--recur); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
+    .recur-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .recur-panel .form-group { margin-bottom: 0; }
+    .recur-preview {
+      margin-top: 10px; font-size: .78rem; color: #7C3AED;
+      background: #EDE9FE; border-radius: 7px; padding: 7px 10px;
+      font-weight: 600;
+    }
+
+    /* ── PARTNER SECTION ── */
+    .partner-section {
+      margin-bottom: 28px;
+    }
+    .partner-section-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .partner-section-header h2 { font-size: 1rem; font-weight: 700; }
+    .partner-section-header button {
+      background: none; border: none; font-size: .8rem; color: var(--muted);
+      cursor: pointer; padding: 4px 8px; border-radius: 6px; font-weight: 600;
+      transition: background .15s;
+    }
+    .partner-section-header button:hover { background: var(--border); color: var(--text); }
+
+    .partner-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    @media (max-width: 600px) { .partner-grid { grid-template-columns: 1fr; } }
+
+    .partner-card {
+      background: var(--card); border-radius: 14px; padding: 22px 24px;
+      box-shadow: var(--shadow); border: 2px solid var(--border);
+      position: relative;
+    }
+    .partner-card.p1 { border-color: #A78BFA; }
+    .partner-card.p2 { border-color: #60A5FA; }
+
+    .partner-avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; font-weight: 700; margin-bottom: 10px;
+    }
+    .p1 .partner-avatar { background: #EDE9FE; color: #7C3AED; }
+    .p2 .partner-avatar { background: #DBEAFE; color: #2563EB; }
+
+    .partner-name { font-size: 1.05rem; font-weight: 700; margin-bottom: 14px; }
+
+    .partner-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid #F3F2FF; }
+    .partner-row:last-of-type { border-bottom: none; }
+    .partner-row .pr-label { font-size: .78rem; color: var(--muted); font-weight: 600; }
+    .partner-row .pr-val   { font-size: .9rem; font-weight: 700; }
+
+    .balance-chip {
+      margin-top: 14px; padding: 10px 14px; border-radius: 10px;
+      font-size: .85rem; font-weight: 700; text-align: center;
+    }
+    .balance-chip.ok     { background: #DCFCE7; color: #16A34A; }
+    .balance-chip.debt   { background: #FEE2E2; color: #DC2626; }
+    .balance-chip.even   { background: #F3F2FF; color: var(--primary); }
+
+    .btn-withdraw {
+      margin-top: 14px; width: 100%; padding: 9px; border-radius: 9px; border: none;
+      font-size: .85rem; font-weight: 700; cursor: pointer; transition: opacity .15s;
+    }
+    .p1 .btn-withdraw { background: #EDE9FE; color: #7C3AED; }
+    .p2 .btn-withdraw { background: #DBEAFE; color: #2563EB; }
+    .btn-withdraw:hover { opacity: .8; }
+
+    .withdraw-history { margin-top: 14px; }
+    .withdraw-history .wh-title { font-size: .72rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
+    .withdraw-item { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px dashed #F3F2FF; font-size: .8rem; }
+    .withdraw-item:last-child { border-bottom: none; }
+    .withdraw-item .wi-date { color: var(--muted); }
+    .withdraw-item .wi-amt  { font-weight: 700; color: #2563EB; }
+    .p1 .withdraw-item .wi-amt { color: #7C3AED; }
+    .wi-del { background: none; border: none; cursor: pointer; color: #CBD5E1; font-size: .85rem; padding: 2px 4px; border-radius: 4px; }
+    .wi-del:hover { color: var(--expense); }
+
+    /* ── PARTNER CONFIG MODAL ── */
+    .cfg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    /* responsive */
+    @media (max-width: 600px) {
+      header { padding: 0 16px; }
+      main { padding: 20px 12px; }
+      .actions { margin-left: 0; width: 100%; }
+      .btn { flex: 1; justify-content: center; }
+      .recur-grid { grid-template-columns: 1fr; }
+      .cfg-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>💼 If You Skill — Finanzas</h1>
+  <span id="header-date"></span>
+</header>
+
+<main>
+  <!-- SUMMARY CARDS -->
+  <div class="summary-grid">
+    <div class="card balance">
+      <div class="label">Balance Total (año)</div>
+      <div class="amount" id="s-balance">$0</div>
+      <div class="sub" id="s-year"></div>
+    </div>
+    <div class="card income-c">
+      <div class="label">Ingresos acumulados</div>
+      <div class="amount" id="s-income">$0</div>
+      <div class="sub">En el período seleccionado</div>
+    </div>
+    <div class="card expense-c">
+      <div class="label">Egresos acumulados</div>
+      <div class="amount" id="s-expense">$0</div>
+      <div class="sub">En el período seleccionado</div>
+    </div>
+    <div class="card month-c">
+      <div class="label">Resultado del mes actual</div>
+      <div class="amount" id="s-month">$0</div>
+      <div class="sub" id="s-month-label"></div>
+    </div>
+  </div>
+
+  <!-- FILTERS + ACTIONS -->
+  <div class="filter-bar">
+    <label>Año:</label>
+    <select id="filter-year" onchange="render()"></select>
+    <label>Mes:</label>
+    <select id="filter-month" onchange="render()">
+      <option value="all">Todos los meses</option>
+      <option value="1">Enero</option><option value="2">Febrero</option>
+      <option value="3">Marzo</option><option value="4">Abril</option>
+      <option value="5">Mayo</option><option value="6">Junio</option>
+      <option value="7">Julio</option><option value="8">Agosto</option>
+      <option value="9">Septiembre</option><option value="10">Octubre</option>
+      <option value="11">Noviembre</option><option value="12">Diciembre</option>
+    </select>
+    <label>Tipo:</label>
+    <select id="filter-type" onchange="render()">
+      <option value="all">Todos</option>
+      <option value="income">Ingresos</option>
+      <option value="expense">Egresos</option>
+    </select>
+    <div class="actions">
+      <button class="btn btn-income"  onclick="openModal('income')">＋ Ingreso</button>
+      <button class="btn btn-expense" onclick="openModal('expense')">＋ Egreso</button>
+      <button class="btn btn-export"  onclick="exportCSV()">⬇ Exportar CSV</button>
+    </div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="table-card">
+    <div class="table-header">
+      Movimientos
+      <span id="count-label"></span>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Descripción</th>
+          <th>Categoría</th>
+          <th>Tipo</th>
+          <th style="text-align:right">Monto</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="tx-body"></tbody>
+    </table>
+    <div class="empty-state" id="empty-state" style="display:none">
+      <div class="icon">📊</div>
+      No hay movimientos para este período.<br>¡Empezá registrando tu primer ingreso o egreso!
+    </div>
+  </div>
+
+  <!-- MONTHLY BREAKDOWN -->
+  <div class="monthly-section table-card" style="margin-top:28px">
+    <div class="table-header">Resumen mensual <span id="year-label-month"></span></div>
+    <div class="monthly-grid" id="monthly-grid"></div>
+  </div>
+
+  <!-- PARTNER DISTRIBUTION -->
+  <div class="partner-section" style="margin-top:28px">
+    <div class="partner-section-header">
+      <h2 style="font-size:.88rem">👥 Distribución entre socias (50 / 50)</h2>
+      <button onclick="openPartnerConfig()">✏ Editar nombres</button>
+    </div>
+    <div class="partner-grid">
+      <div class="partner-card p1">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+          <div class="partner-avatar" id="p1-avatar" style="width:32px;height:32px;font-size:.85rem;margin:0">S1</div>
+          <div class="partner-name" id="p1-name" style="font-size:.9rem;margin:0">Socia 1</div>
+        </div>
+        <div class="partner-row"><span class="pr-label">Le corresponde (50%)</span><span class="pr-val" id="p1-share" style="font-size:.82rem">$0</span></div>
+        <div class="partner-row"><span class="pr-label">Ya retiró</span><span class="pr-val" id="p1-withdrawn" style="font-size:.82rem">$0</span></div>
+        <div class="balance-chip even" id="p1-chip" style="font-size:.75rem;padding:7px 10px;margin-top:10px">Equilibrado</div>
+        <button class="btn-withdraw" onclick="openWithdraw(1)" style="margin-top:10px;padding:7px;font-size:.78rem">＋ Registrar retiro</button>
+        <div class="withdraw-history" id="p1-history"></div>
+      </div>
+      <div class="partner-card p2">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+          <div class="partner-avatar" id="p2-avatar" style="width:32px;height:32px;font-size:.85rem;margin:0">S2</div>
+          <div class="partner-name" id="p2-name" style="font-size:.9rem;margin:0">Socia 2</div>
+        </div>
+        <div class="partner-row"><span class="pr-label">Le corresponde (50%)</span><span class="pr-val" id="p2-share" style="font-size:.82rem">$0</span></div>
+        <div class="partner-row"><span class="pr-label">Ya retiró</span><span class="pr-val" id="p2-withdrawn" style="font-size:.82rem">$0</span></div>
+        <div class="balance-chip even" id="p2-chip" style="font-size:.75rem;padding:7px 10px;margin-top:10px">Equilibrado</div>
+        <button class="btn-withdraw" onclick="openWithdraw(2)" style="margin-top:10px;padding:7px;font-size:.78rem">＋ Registrar retiro</button>
+        <div class="withdraw-history" id="p2-history"></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- MODAL -->
+<div class="overlay" id="modal-overlay" onclick="closeOnOverlay(event)">
+  <div class="modal">
+    <h2 id="modal-title">Agregar movimiento</h2>
+
+    <div class="form-group">
+      <label>Fecha *</label>
+      <input type="date" id="f-date" onchange="updateRecurPreview()" />
+    </div>
+    <div class="form-group">
+      <label>Descripción *</label>
+      <input type="text" id="f-desc" placeholder="Ej: Pago proyecto selección" />
+    </div>
+    <div class="form-group">
+      <label>Categoría</label>
+      <select id="f-cat">
+        <option value="">— Seleccionar —</option>
+        <option>Reclutamiento freelance</option>
+        <option>Búsqueda</option>
+        <option>Diseño</option>
+        <option>Outplacement</option>
+        <option>Capacitación</option>
+        <option>Consultoría</option>
+        <option>Gastos generales</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Monto (ARS) *</label>
+      <input type="number" id="f-amount" placeholder="0.00" min="0" step="0.01" />
+    </div>
+    <div class="form-group">
+      <label>Notas (opcional)</label>
+      <textarea id="f-notes" placeholder="Observaciones adicionales..."></textarea>
+    </div>
+
+    <!-- RECURRING TOGGLE -->
+    <div class="recur-row" id="recur-row" onclick="toggleRecur()">
+      <div class="recur-label">
+        🔁 Movimiento recurrente
+        <span>Se repite automáticamente</span>
+      </div>
+      <label class="toggle" onclick="event.stopPropagation()">
+        <input type="checkbox" id="f-recur" onchange="toggleRecur()" />
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <!-- RECURRING OPTIONS PANEL -->
+    <div class="recur-panel" id="recur-panel">
+      <div class="rp-title">⚙ Configurar recurrencia</div>
+      <div class="recur-grid">
+        <div class="form-group">
+          <label>Frecuencia</label>
+          <select id="f-freq" onchange="updateRecurPreview()">
+            <option value="weekly">Semanal (cada 7 días)</option>
+            <option value="monthly" selected>Mensual (mismo día)</option>
+            <option value="annual">Anual (mismo mes/día)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Repetir hasta</label>
+          <input type="date" id="f-until" onchange="updateRecurPreview()" />
+        </div>
+      </div>
+      <div class="recur-preview" id="recur-preview"></div>
+    </div>
+
+    <input type="hidden" id="f-type" />
+    <input type="hidden" id="f-edit-id" />
+
+    <div class="modal-actions">
+      <button class="btn btn-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-submit btn-income" id="btn-submit" onclick="saveTransaction()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- WITHDRAWAL MODAL -->
+<div class="overlay" id="withdraw-overlay" onclick="closeWithdrawOnOverlay(event)">
+  <div class="modal" style="max-width:400px">
+    <h2 id="withdraw-title">Registrar retiro</h2>
+    <div class="form-group">
+      <label>Fecha *</label>
+      <input type="date" id="w-date" />
+    </div>
+    <div class="form-group">
+      <label>Monto retirado (ARS) *</label>
+      <input type="number" id="w-amount" placeholder="0.00" min="0" step="0.01" />
+    </div>
+    <div class="form-group">
+      <label>Notas (opcional)</label>
+      <input type="text" id="w-notes" placeholder="Ej: Pago de honorarios marzo" />
+    </div>
+    <input type="hidden" id="w-partner" />
+    <div class="modal-actions">
+      <button class="btn btn-cancel" onclick="closeWithdraw()">Cancelar</button>
+      <button class="btn btn-submit" id="w-submit" onclick="saveWithdraw()" style="background:var(--primary);color:#fff;flex:2;justify-content:center">Guardar retiro</button>
+    </div>
+  </div>
+</div>
+
+<!-- PARTNER CONFIG MODAL -->
+<div class="overlay" id="partner-cfg-overlay" onclick="closeCfgOnOverlay(event)">
+  <div class="modal" style="max-width:380px">
+    <h2>✏ Nombres de socias</h2>
+    <div class="cfg-grid" style="margin-bottom:20px">
+      <div class="form-group" style="margin:0">
+        <label>Socia 1</label>
+        <input type="text" id="cfg-p1" placeholder="Nombre" maxlength="20" />
+      </div>
+      <div class="form-group" style="margin:0">
+        <label>Socia 2</label>
+        <input type="text" id="cfg-p2" placeholder="Nombre" maxlength="20" />
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-cancel" onclick="closeCfg()">Cancelar</button>
+      <button class="btn btn-submit" onclick="savePartnerNames()" style="background:var(--primary);color:#fff;flex:2;justify-content:center">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE SERIES MODAL -->
+<div class="overlay" id="del-overlay">
+  <div class="modal" style="max-width:380px; text-align:center">
+    <div style="font-size:2rem;margin-bottom:12px">🔁</div>
+    <h2 style="margin-bottom:10px">¿Qué querés eliminar?</h2>
+    <p style="font-size:.9rem;color:var(--muted);margin-bottom:22px">Este movimiento es parte de una serie recurrente.</p>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <button class="btn btn-expense" style="justify-content:center" onclick="confirmDelete('one')">Solo este movimiento</button>
+      <button class="btn" style="background:#F3F0FF;color:var(--recur);justify-content:center;border:1.5px solid #C4B5FD" onclick="confirmDelete('series')">Eliminar toda la serie</button>
+      <button class="btn btn-cancel" style="justify-content:center;background:#F1F0FB" onclick="cancelDelete()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── DATA ──────────────────────────────────────────────────────────────────
+  const STORAGE_KEY    = 'iys_transactions_v1';
+  const WITHDRAW_KEY   = 'iys_withdrawals_v1';
+  const PARTNERS_KEY   = 'iys_partners_v1';
+  let transactions     = [];
+  let withdrawals      = [];
+  let partnerNames     = { p1: 'Socia 1', p2: 'Socia 2' };
+  let pendingDeleteId  = null;
+
+  function loadData() {
+    try { transactions  = JSON.parse(localStorage.getItem(STORAGE_KEY)  || '[]'); } catch(e) { transactions  = []; }
+    try { withdrawals   = JSON.parse(localStorage.getItem(WITHDRAW_KEY) || '[]'); } catch(e) { withdrawals   = []; }
+    try { partnerNames  = JSON.parse(localStorage.getItem(PARTNERS_KEY) || 'null') || { p1:'Socia 1', p2:'Socia 2' }; } catch(e) {}
+  }
+  function saveData()      { localStorage.setItem(STORAGE_KEY,  JSON.stringify(transactions)); }
+  function saveWithdraws() { localStorage.setItem(WITHDRAW_KEY, JSON.stringify(withdrawals));  }
+  function savePartners()  { localStorage.setItem(PARTNERS_KEY, JSON.stringify(partnerNames)); }
+
+  // ── HELPERS ───────────────────────────────────────────────────────────────
+  const months = ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
+                  'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  const freqLabel = { weekly:'Semanal', monthly:'Mensual', annual:'Anual' };
+
+  function fmt(n) {
+    const s = Math.abs(n).toLocaleString('es-AR', {minimumFractionDigits:2, maximumFractionDigits:2});
+    return (n < 0 ? '−' : '') + '$ ' + s;
+  }
+  function fmtDate(iso) { const [y,m,d]=iso.split('-'); return `${d}/${m}/${y}`; }
+  function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
+
+  // ── ADD MONTHS SAFELY ─────────────────────────────────────────────────────
+  function addMonths(dateStr, n) {
+    const d = new Date(dateStr + 'T00:00:00');
+    const day = d.getDate();
+    d.setDate(1);
+    d.setMonth(d.getMonth() + n);
+    d.setDate(Math.min(day, new Date(d.getFullYear(), d.getMonth()+1, 0).getDate()));
+    return d.toISOString().slice(0,10);
+  }
+  function addDays(dateStr, n) {
+    const d = new Date(dateStr + 'T00:00:00');
+    d.setDate(d.getDate() + n);
+    return d.toISOString().slice(0,10);
+  }
+  function addYears(dateStr, n) {
+    const d = new Date(dateStr + 'T00:00:00');
+    d.setFullYear(d.getFullYear() + n);
+    return d.toISOString().slice(0,10);
+  }
+
+  // ── GENERATE RECURRING DATES ──────────────────────────────────────────────
+  function generateDates(startDate, freq, until) {
+    const dates = [];
+    let current = startDate;
+    const limit = until;
+    let safety = 0;
+    while (current <= limit && safety < 500) {
+      dates.push(current);
+      safety++;
+      if (freq === 'weekly')  current = addDays(current, 7);
+      else if (freq === 'monthly') current = addMonths(current, 1);
+      else if (freq === 'annual')  current = addYears(current, 1);
+      else break;
+    }
+    return dates;
+  }
+
+  // ── RECURRING UI ──────────────────────────────────────────────────────────
+  function toggleRecur() {
+    const cb    = document.getElementById('f-recur');
+    // If toggled via row click (not checkbox), flip the checkbox
+    const row   = document.getElementById('recur-row');
+    const panel = document.getElementById('recur-panel');
+    // cb.checked might already be updated if checkbox fired; row click will flip
+    row.classList.toggle('active', cb.checked);
+    panel.classList.toggle('visible', cb.checked);
+    if (cb.checked) updateRecurPreview();
+  }
+
+  function updateRecurPreview() {
+    const start = document.getElementById('f-date').value;
+    const freq  = document.getElementById('f-freq').value;
+    const until = document.getElementById('f-until').value;
+    const prev  = document.getElementById('recur-preview');
+    if (!start || !until || !document.getElementById('f-recur').checked) { prev.textContent = ''; return; }
+    if (until < start) { prev.textContent = '⚠ La fecha de fin debe ser posterior a la fecha de inicio.'; return; }
+    const dates = generateDates(start, freq, until);
+    const fl = freqLabel[freq];
+    prev.textContent = `✓ Se generarán ${dates.length} movimiento${dates.length!==1?'s':''} (${fl}) — del ${fmtDate(dates[0])} al ${fmtDate(dates[dates.length-1])}`;
+  }
+
+  // ── YEAR SELECTOR ─────────────────────────────────────────────────────────
+  function populateYears() {
+    const sel  = document.getElementById('filter-year');
+    const now  = new Date().getFullYear();
+    const yrs  = new Set(transactions.map(t => t.date.slice(0,4)));
+    yrs.add(String(now));
+    yrs.add(String(now + 1));
+    yrs.add(String(now + 2));
+    [...yrs].sort().reverse().forEach(y => {
+      const o = document.createElement('option');
+      o.value = y; o.textContent = y; sel.appendChild(o);
+    });
+    sel.value = String(now);
+  }
+
+  function ensureYear(y) {
+    const sel = document.getElementById('filter-year');
+    if (![...sel.options].some(o=>o.value===y)) {
+      const o = document.createElement('option');
+      o.value = y; o.textContent = y;
+      // insert sorted
+      let inserted = false;
+      for (let i = 0; i < sel.options.length; i++) {
+        if (y > sel.options[i].value) { sel.insertBefore(o, sel.options[i]); inserted=true; break; }
+      }
+      if (!inserted) sel.appendChild(o);
+    }
+  }
+
+  // ── FILTER ────────────────────────────────────────────────────────────────
+  function getFiltered() {
+    const year  = document.getElementById('filter-year').value;
+    const month = document.getElementById('filter-month').value;
+    const type  = document.getElementById('filter-type').value;
+    return transactions.filter(t => {
+      const [ty,tm] = t.date.split('-');
+      if (ty !== year) return false;
+      if (month !== 'all' && tm !== month.padStart(2,'0')) return false;
+      if (type  !== 'all' && t.type !== type) return false;
+      return true;
+    }).sort((a,b) => b.date.localeCompare(a.date));
+  }
+
+  // ── RENDER ────────────────────────────────────────────────────────────────
+  function render() {
+    const year     = document.getElementById('filter-year').value;
+    const filtered = getFiltered();
+    const yearTx   = transactions.filter(t => t.date.startsWith(year));
+
+    const totalIncome  = filtered.filter(t=>t.type==='income').reduce((a,t)=>a+t.amount,0);
+    const totalExpense = filtered.filter(t=>t.type==='expense').reduce((a,t)=>a+t.amount,0);
+    const annualIncome  = yearTx.filter(t=>t.type==='income').reduce((a,t)=>a+t.amount,0);
+    const annualExpense = yearTx.filter(t=>t.type==='expense').reduce((a,t)=>a+t.amount,0);
+    const annualBalance = annualIncome - annualExpense;
+
+    const now = new Date();
+    const cm  = String(now.getMonth()+1).padStart(2,'0');
+    const cy  = String(now.getFullYear());
+    const mTx = transactions.filter(t=>t.date.startsWith(`${cy}-${cm}`));
+    const mRes = mTx.filter(t=>t.type==='income').reduce((a,t)=>a+t.amount,0)
+               - mTx.filter(t=>t.type==='expense').reduce((a,t)=>a+t.amount,0);
+
+    // Cards
+    document.getElementById('s-balance').textContent  = fmt(annualBalance);
+    document.getElementById('s-balance').className    = 'amount '+(annualBalance>=0?'pos':'neg');
+    document.getElementById('s-year').textContent     = `Balance acumulado ${year}`;
+    document.getElementById('s-income').textContent   = fmt(totalIncome);
+    document.getElementById('s-expense').textContent  = fmt(totalExpense);
+    document.getElementById('s-month').textContent    = fmt(mRes);
+    document.getElementById('s-month').className      = 'amount '+(mRes>=0?'pos':'neg');
+    document.getElementById('s-month-label').textContent = months[now.getMonth()]+' '+cy;
+
+    // Table
+    const tbody = document.getElementById('tx-body');
+    const empty = document.getElementById('empty-state');
+    tbody.innerHTML = '';
+    if (!filtered.length) {
+      empty.style.display = 'block';
+    } else {
+      empty.style.display = 'none';
+      filtered.forEach(t => {
+        const tr   = document.createElement('tr');
+        const sign = t.type==='income' ? '+' : '−';
+        const recurBadge = t.seriesId
+          ? `<span class="badge badge-recur">↻ ${freqLabel[t.freq]||'Recurrente'}</span>`
+          : '';
+        tr.innerHTML = `
+          <td>${fmtDate(t.date)}</td>
+          <td>
+            <div style="font-weight:600">${esc(t.desc)}${recurBadge}</div>
+            ${t.notes ? `<div style="font-size:.78rem;color:var(--muted)">${esc(t.notes)}</div>`:''}
+          </td>
+          <td><span style="font-size:.82rem;color:var(--muted)">${esc(t.cat||'—')}</span></td>
+          <td><span class="badge badge-${t.type}">${t.type==='income'?'Ingreso':'Egreso'}</span></td>
+          <td style="text-align:right" class="amount-${t.type}">${sign} ${fmt(t.amount)}</td>
+          <td><button class="btn-del" onclick="deleteTransaction('${t.id}')" title="Eliminar">✕</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+    document.getElementById('count-label').textContent = `${filtered.length} registro${filtered.length!==1?'s':''}`;
+    renderMonthly(year);
+    document.getElementById('year-label-month').textContent = year;
+    document.getElementById('header-date').textContent =
+      now.toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+    renderPartners();
+  }
+
+  function renderMonthly(year) {
+    const grid = document.getElementById('monthly-grid');
+    grid.innerHTML = '';
+    for (let m = 1; m <= 12; m++) {
+      const key = `${year}-${String(m).padStart(2,'0')}`;
+      const mt  = transactions.filter(t=>t.date.startsWith(key));
+      const inc = mt.filter(t=>t.type==='income').reduce((a,t)=>a+t.amount,0);
+      const exp = mt.filter(t=>t.type==='expense').reduce((a,t)=>a+t.amount,0);
+      const res = inc - exp;
+      const has = inc>0||exp>0;
+      const pill = document.createElement('div');
+      pill.className = 'month-pill';
+      pill.innerHTML = `
+        <div class="m-name">${months[m-1]}</div>
+        <div class="m-income">↑ ${fmt(inc)}</div>
+        <div class="m-expense">↓ ${fmt(exp)}</div>
+        <div class="m-result ${res>=0?'pos':'neg'}" style="${!has?'color:var(--muted)':''}">${has?fmt(res):'Sin datos'}</div>`;
+      grid.appendChild(pill);
+    }
+  }
+
+  function esc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // ── MODAL ─────────────────────────────────────────────────────────────────
+  function openModal(type) {
+    document.getElementById('f-type').value    = type;
+    document.getElementById('f-edit-id').value = '';
+    document.getElementById('f-date').value    = new Date().toISOString().slice(0,10);
+    document.getElementById('f-desc').value    = '';
+    document.getElementById('f-cat').value     = '';
+    document.getElementById('f-amount').value  = '';
+    document.getElementById('f-notes').value   = '';
+    document.getElementById('f-recur').checked = false;
+    document.getElementById('f-freq').value    = 'monthly';
+    // Default "until" = end of current year
+    document.getElementById('f-until').value   = `${new Date().getFullYear()}-12-31`;
+    document.getElementById('recur-row').classList.remove('active');
+    document.getElementById('recur-panel').classList.remove('visible');
+    document.getElementById('recur-preview').textContent = '';
+
+    const isInc = type === 'income';
+    document.getElementById('modal-title').textContent = isInc ? '＋ Registrar ingreso' : '＋ Registrar egreso';
+    document.getElementById('btn-submit').className = 'btn btn-submit '+(isInc?'btn-income':'btn-expense');
+    document.getElementById('modal-overlay').classList.add('open');
+    setTimeout(()=>document.getElementById('f-desc').focus(), 150);
+  }
+
+  function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
+  function closeOnOverlay(e) { if (e.target===document.getElementById('modal-overlay')) closeModal(); }
+  document.addEventListener('keydown', e => { if(e.key==='Escape') { closeModal(); cancelDelete(); } });
+
+  // ── SAVE ──────────────────────────────────────────────────────────────────
+  function saveTransaction() {
+    const date   = document.getElementById('f-date').value.trim();
+    const desc   = document.getElementById('f-desc').value.trim();
+    const cat    = document.getElementById('f-cat').value;
+    const amount = parseFloat(document.getElementById('f-amount').value);
+    const notes  = document.getElementById('f-notes').value.trim();
+    const type   = document.getElementById('f-type').value;
+    const recur  = document.getElementById('f-recur').checked;
+    const freq   = document.getElementById('f-freq').value;
+    const until  = document.getElementById('f-until').value;
+
+    if (!date)   return alert('Por favor indicá una fecha.');
+    if (!desc)   return alert('Por favor completá la descripción.');
+    if (!amount || amount <= 0) return alert('El monto debe ser mayor a 0.');
+
+    if (recur) {
+      if (!until)        return alert('Indicá la fecha hasta la cual se repite.');
+      if (until < date)  return alert('La fecha "hasta" debe ser posterior a la fecha de inicio.');
+
+      const dates   = generateDates(date, freq, until);
+      const seriesId = uid();
+      dates.forEach(d => {
+        transactions.push({ id: uid(), date: d, desc, cat, amount, notes, type, seriesId, freq });
+        ensureYear(d.slice(0,4));
+      });
+      document.getElementById('filter-year').value = date.slice(0,4);
+    } else {
+      transactions.push({ id: uid(), date, desc, cat, amount, notes, type });
+      ensureYear(date.slice(0,4));
+      document.getElementById('filter-year').value = date.slice(0,4);
+    }
+
+    saveData();
+    closeModal();
+    render();
+  }
+
+  // ── DELETE ────────────────────────────────────────────────────────────────
+  function deleteTransaction(id) {
+    const tx = transactions.find(t => t.id === id);
+    if (!tx) return;
+    pendingDeleteId = id;
+    if (tx.seriesId) {
+      document.getElementById('del-overlay').classList.add('open');
+    } else {
+      if (!confirm('¿Eliminar este movimiento?')) { pendingDeleteId = null; return; }
+      transactions = transactions.filter(t => t.id !== id);
+      saveData(); render(); pendingDeleteId = null;
+    }
+  }
+
+  function confirmDelete(mode) {
+    if (!pendingDeleteId) return;
+    const tx = transactions.find(t => t.id === pendingDeleteId);
+    if (mode === 'series' && tx && tx.seriesId) {
+      transactions = transactions.filter(t => t.seriesId !== tx.seriesId);
+    } else {
+      transactions = transactions.filter(t => t.id !== pendingDeleteId);
+    }
+    saveData(); render();
+    pendingDeleteId = null;
+    document.getElementById('del-overlay').classList.remove('open');
+  }
+
+  function cancelDelete() {
+    pendingDeleteId = null;
+    document.getElementById('del-overlay').classList.remove('open');
+  }
+
+  // ── EXPORT CSV ────────────────────────────────────────────────────────────
+  function exportCSV() {
+    const filtered = getFiltered();
+    if (!filtered.length) return alert('No hay datos para exportar en el período seleccionado.');
+    const header = ['Fecha','Descripción','Categoría','Tipo','Monto','Notas','Recurrente','Frecuencia'];
+    const rows = filtered.map(t => [
+      t.date, `"${t.desc}"`, `"${t.cat||''}"`,
+      t.type==='income'?'Ingreso':'Egreso',
+      t.amount.toFixed(2),
+      `"${t.notes||''}"`,
+      t.seriesId ? 'Sí' : 'No',
+      t.freq ? freqLabel[t.freq] : ''
+    ]);
+    const csv  = [header,...rows].map(r=>r.join(',')).join('\n');
+    const blob = new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url; a.download = `iys-finanzas-${document.getElementById('filter-year').value}.csv`;
+    a.click(); URL.revokeObjectURL(url);
+  }
+
+  // ── PARTNER DISTRIBUTION ─────────────────────────────────────────────────
+  function renderPartners() {
+    const year  = document.getElementById('filter-year').value;
+    const month = document.getElementById('filter-month').value;
+
+    // Net profit for the current filter period
+    const periodTx = transactions.filter(t => {
+      const [ty, tm] = t.date.split('-');
+      if (ty !== year) return false;
+      if (month !== 'all' && tm !== month.padStart(2,'0')) return false;
+      return true;
+    });
+    const netProfit = periodTx.filter(t=>t.type==='income').reduce((a,t)=>a+t.amount,0)
+                    - periodTx.filter(t=>t.type==='expense').reduce((a,t)=>a+t.amount,0);
+    const share = Math.max(netProfit, 0) / 2;  // each partner's slice (min 0 if loss)
+
+    // Withdrawals in the same period
+    const periodW = withdrawals.filter(w => {
+      const [wy, wm] = w.date.split('-');
+      if (wy !== year) return false;
+      if (month !== 'all' && wm !== month.padStart(2,'0')) return false;
+      return true;
+    });
+
+    [1, 2].forEach(p => {
+      const pKey    = `p${p}`;
+      const name    = partnerNames[pKey] || `Socia ${p}`;
+      const initials = name.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase() || `S${p}`;
+      const pW      = periodW.filter(w => w.partner === p);
+      const totalW  = pW.reduce((a,w)=>a+w.amount,0);
+      const balance = share - totalW;
+
+      document.getElementById(`p${p}-avatar`).textContent     = initials;
+      document.getElementById(`p${p}-name`).textContent       = name;
+      document.getElementById(`p${p}-share`).textContent      = fmt(share);
+      document.getElementById(`p${p}-withdrawn`).textContent  = fmt(totalW);
+
+      const chip = document.getElementById(`p${p}-chip`);
+      if (Math.abs(balance) < 1) {
+        chip.textContent = '✓ Al día';
+        chip.className   = 'balance-chip even';
+      } else if (balance > 0) {
+        chip.textContent = `Puede retirar ${fmt(balance)}`;
+        chip.className   = 'balance-chip ok';
+      } else {
+        chip.textContent = `Retiró de más: ${fmt(Math.abs(balance))}`;
+        chip.className   = 'balance-chip debt';
+      }
+
+      // Withdrawal history list (most recent 5)
+      const hist = document.getElementById(`p${p}-history`);
+      const recent = [...pW].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
+      if (!recent.length) { hist.innerHTML = ''; return; }
+      hist.innerHTML = `<div class="wh-title">Últimos retiros</div>` +
+        recent.map(w => `
+          <div class="withdraw-item">
+            <span class="wi-date">${fmtDate(w.date)}</span>
+            <span>${esc(w.notes||'—')}</span>
+            <span class="wi-amt">${fmt(w.amount)}</span>
+            <button class="wi-del" onclick="deleteWithdraw('${w.id}')" title="Eliminar">✕</button>
+          </div>`).join('');
+    });
+  }
+
+  // ── WITHDRAW MODAL ───────────────────────────────────────────────────────
+  function openWithdraw(partner) {
+    document.getElementById('w-partner').value = partner;
+    document.getElementById('w-date').value    = new Date().toISOString().slice(0,10);
+    document.getElementById('w-amount').value  = '';
+    document.getElementById('w-notes').value   = '';
+    const name = partnerNames[`p${partner}`] || `Socia ${partner}`;
+    document.getElementById('withdraw-title').textContent = `💸 Retiro de ${name}`;
+    document.getElementById('withdraw-overlay').classList.add('open');
+    setTimeout(()=>document.getElementById('w-amount').focus(), 150);
+  }
+  function closeWithdraw() { document.getElementById('withdraw-overlay').classList.remove('open'); }
+  function closeWithdrawOnOverlay(e) { if(e.target===document.getElementById('withdraw-overlay')) closeWithdraw(); }
+
+  function saveWithdraw() {
+    const partner = parseInt(document.getElementById('w-partner').value);
+    const date    = document.getElementById('w-date').value;
+    const amount  = parseFloat(document.getElementById('w-amount').value);
+    const notes   = document.getElementById('w-notes').value.trim();
+    if (!date)             return alert('Indicá una fecha.');
+    if (!amount || amount<=0) return alert('El monto debe ser mayor a 0.');
+    withdrawals.push({ id: uid(), partner, date, amount, notes });
+    saveWithdraws();
+    closeWithdraw();
+    renderPartners();
+  }
+
+  function deleteWithdraw(id) {
+    if (!confirm('¿Eliminar este retiro?')) return;
+    withdrawals = withdrawals.filter(w => w.id !== id);
+    saveWithdraws();
+    renderPartners();
+  }
+
+  // ── PARTNER CONFIG ────────────────────────────────────────────────────────
+  function openPartnerConfig() {
+    document.getElementById('cfg-p1').value = partnerNames.p1;
+    document.getElementById('cfg-p2').value = partnerNames.p2;
+    document.getElementById('partner-cfg-overlay').classList.add('open');
+    setTimeout(()=>document.getElementById('cfg-p1').focus(), 150);
+  }
+  function closeCfg() { document.getElementById('partner-cfg-overlay').classList.remove('open'); }
+  function closeCfgOnOverlay(e) { if(e.target===document.getElementById('partner-cfg-overlay')) closeCfg(); }
+
+  function savePartnerNames() {
+    const n1 = document.getElementById('cfg-p1').value.trim();
+    const n2 = document.getElementById('cfg-p2').value.trim();
+    if (!n1 || !n2) return alert('Completá ambos nombres.');
+    partnerNames = { p1: n1, p2: n2 };
+    savePartners();
+    closeCfg();
+    renderPartners();
+  }
+
+  // ── INIT ──────────────────────────────────────────────────────────────────
+  loadData();
+  populateYears();
+  render();
+</script>
+</body>
+</html>
