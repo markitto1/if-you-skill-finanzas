@@ -4,34 +4,39 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>If You Skill — Finanzas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;0,700;0,800;1,600&display=swap" rel="stylesheet" />
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --primary:       #5B4FCF;
-      --primary-light: #7B6FE8;
-      --income:        #22C55E;
+      --primary:       #38D16A;
+      --primary-light: #5EDE87;
+      --primary-dark:  #162236;
+      --income:        #38D16A;
       --expense:       #EF4444;
-      --bg:            #F5F4FF;
+      --bg:            #F4F6F8;
       --card:          #FFFFFF;
-      --border:        #E5E3F8;
-      --text:          #1E1B3A;
-      --muted:         #6B7280;
-      --shadow:        0 2px 12px rgba(91,79,207,.10);
-      --recur:         #8B5CF6;
+      --border:        #E2E8F0;
+      --text:          #162236;
+      --muted:         #64748B;
+      --shadow:        0 2px 12px rgba(56,209,106,.10);
+      --recur:         #38D16A;
     }
 
-    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+    body { font-family: 'Poppins', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
     /* ── HEADER ── */
     header {
-      background: var(--primary); color: #fff;
+      background: var(--primary-dark); color: #fff;
       padding: 0 32px; display: flex; align-items: center;
       justify-content: space-between; height: 68px;
-      box-shadow: 0 2px 8px rgba(91,79,207,.3);
+      box-shadow: 0 2px 8px rgba(22,34,54,.35);
     }
     header h1 { font-size: 1.35rem; font-weight: 700; letter-spacing: .5px; }
-    header span { font-size: .8rem; opacity: .75; }
+    header h1 em { color: var(--primary); font-style: italic; font-weight: 800; }
+    header span { font-size: .8rem; opacity: .6; }
 
     /* ── LAYOUT ── */
     main { max-width: 1100px; margin: 0 auto; padding: 32px 20px; }
@@ -89,13 +94,13 @@
     .table-card .table-header span { font-size: .8rem; color: var(--muted); font-weight: 400; }
     table { width: 100%; border-collapse: collapse; }
     thead th {
-      background: #F8F7FF; padding: 12px 20px; text-align: left;
+      background: #F0F4F8; padding: 12px 20px; text-align: left;
       font-size: .78rem; text-transform: uppercase; letter-spacing: .5px;
       color: var(--muted); font-weight: 700; border-bottom: 1px solid var(--border);
     }
-    tbody tr { border-bottom: 1px solid #F3F2FF; transition: background .12s; }
+    tbody tr { border-bottom: 1px solid #F1F5F9; transition: background .12s; }
     tbody tr:last-child { border-bottom: none; }
-    tbody tr:hover { background: #F8F7FF; }
+    tbody tr:hover { background: #F0F9F4; }
     tbody td { padding: 13px 20px; font-size: .9rem; }
     .badge {
       display: inline-block; padding: 3px 10px; border-radius: 20px;
@@ -103,7 +108,7 @@
     }
     .badge-income  { background: #DCFCE7; color: #16A34A; }
     .badge-expense { background: #FEE2E2; color: #DC2626; }
-    .badge-recur   { background: #EDE9FE; color: #7C3AED; font-size: .7rem; padding: 2px 7px; margin-left: 5px; }
+    .badge-recur   { background: #D1FAE5; color: #059669; font-size: .7rem; padding: 2px 7px; margin-left: 5px; }
     .amount-income  { color: var(--income);  font-weight: 700; }
     .amount-expense { color: var(--expense); font-weight: 700; }
     .empty-state { padding: 48px; text-align: center; color: var(--muted); font-size: .95rem; }
@@ -122,7 +127,7 @@
       gap: 12px; padding: 20px 24px;
     }
     .month-pill {
-      background: #F8F7FF; border: 1px solid var(--border);
+      background: #F8FAFC; border: 1px solid var(--border);
       border-radius: 10px; padding: 14px 16px;
     }
     .month-pill .m-name { font-size: .78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
@@ -134,7 +139,7 @@
 
     /* ── MODAL ── */
     .overlay {
-      position: fixed; inset: 0; background: rgba(30,27,58,.5);
+      position: fixed; inset: 0; background: rgba(22,34,54,.55);
       display: flex; align-items: center; justify-content: center;
       z-index: 100; opacity: 0; pointer-events: none; transition: opacity .2s;
       padding: 16px;
@@ -162,18 +167,18 @@
     .form-group textarea:focus { outline: none; border-color: var(--primary); background: #fff; }
     .form-group textarea { resize: vertical; min-height: 60px; }
     .modal-actions { display: flex; gap: 10px; margin-top: 10px; }
-    .btn-cancel { background: #F1F0FB; color: var(--text); flex: 1; justify-content: center; }
+    .btn-cancel { background: #F1F5F9; color: var(--text); flex: 1; justify-content: center; }
     .btn-submit { flex: 2; justify-content: center; }
 
     /* ── RECURRING TOGGLE ── */
     .recur-row {
       display: flex; align-items: center; justify-content: space-between;
-      background: #F8F7FF; border: 1.5px solid var(--border);
+      background: #F8FAFC; border: 1.5px solid var(--border);
       border-radius: 10px; padding: 12px 14px; margin-bottom: 14px;
       cursor: pointer; user-select: none;
     }
     .recur-row:hover { border-color: var(--recur); }
-    .recur-row.active { border-color: var(--recur); background: #EDE9FE; }
+    .recur-row.active { border-color: var(--recur); background: #ECFDF5; }
     .recur-row .recur-label { font-size: .9rem; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 8px; }
     .recur-row .recur-label span { font-size: .78rem; font-weight: 400; color: var(--muted); }
 
@@ -195,7 +200,7 @@
 
     /* Recurring options panel */
     .recur-panel {
-      background: #F3F0FF; border: 1.5px solid #C4B5FD;
+      background: #ECFDF5; border: 1.5px solid #6EE7B7;
       border-radius: 10px; padding: 14px;
       margin-bottom: 14px; display: none;
     }
@@ -204,8 +209,8 @@
     .recur-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .recur-panel .form-group { margin-bottom: 0; }
     .recur-preview {
-      margin-top: 10px; font-size: .78rem; color: #7C3AED;
-      background: #EDE9FE; border-radius: 7px; padding: 7px 10px;
+      margin-top: 10px; font-size: .78rem; color: #059669;
+      background: #D1FAE5; border-radius: 7px; padding: 7px 10px;
       font-weight: 600;
     }
 
@@ -233,20 +238,20 @@
       box-shadow: var(--shadow); border: 2px solid var(--border);
       position: relative;
     }
-    .partner-card.p1 { border-color: #A78BFA; }
-    .partner-card.p2 { border-color: #60A5FA; }
+    .partner-card.p1 { border-color: #38D16A; }
+    .partner-card.p2 { border-color: #162236; }
 
     .partner-avatar {
       width: 40px; height: 40px; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
       font-size: 1.1rem; font-weight: 700; margin-bottom: 10px;
     }
-    .p1 .partner-avatar { background: #EDE9FE; color: #7C3AED; }
-    .p2 .partner-avatar { background: #DBEAFE; color: #2563EB; }
+    .p1 .partner-avatar { background: #D1FAE5; color: #059669; }
+    .p2 .partner-avatar { background: #162236; color: #38D16A; }
 
     .partner-name { font-size: 1.05rem; font-weight: 700; margin-bottom: 14px; }
 
-    .partner-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid #F3F2FF; }
+    .partner-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid #F1F5F9; }
     .partner-row:last-of-type { border-bottom: none; }
     .partner-row .pr-label { font-size: .78rem; color: var(--muted); font-weight: 600; }
     .partner-row .pr-val   { font-size: .9rem; font-weight: 700; }
@@ -257,23 +262,23 @@
     }
     .balance-chip.ok     { background: #DCFCE7; color: #16A34A; }
     .balance-chip.debt   { background: #FEE2E2; color: #DC2626; }
-    .balance-chip.even   { background: #F3F2FF; color: var(--primary); }
+    .balance-chip.even   { background: #ECFDF5; color: var(--primary); }
 
     .btn-withdraw {
       margin-top: 14px; width: 100%; padding: 9px; border-radius: 9px; border: none;
       font-size: .85rem; font-weight: 700; cursor: pointer; transition: opacity .15s;
     }
-    .p1 .btn-withdraw { background: #EDE9FE; color: #7C3AED; }
-    .p2 .btn-withdraw { background: #DBEAFE; color: #2563EB; }
+    .p1 .btn-withdraw { background: #D1FAE5; color: #059669; }
+    .p2 .btn-withdraw { background: #162236; color: #38D16A; }
     .btn-withdraw:hover { opacity: .8; }
 
     .withdraw-history { margin-top: 14px; }
     .withdraw-history .wh-title { font-size: .72rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
-    .withdraw-item { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px dashed #F3F2FF; font-size: .8rem; }
+    .withdraw-item { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px dashed #E2E8F0; font-size: .8rem; }
     .withdraw-item:last-child { border-bottom: none; }
     .withdraw-item .wi-date { color: var(--muted); }
-    .withdraw-item .wi-amt  { font-weight: 700; color: #2563EB; }
-    .p1 .withdraw-item .wi-amt { color: #7C3AED; }
+    .withdraw-item .wi-amt  { font-weight: 700; color: #162236; }
+    .p1 .withdraw-item .wi-amt { color: #059669; }
     .wi-del { background: none; border: none; cursor: pointer; color: #CBD5E1; font-size: .85rem; padding: 2px 4px; border-radius: 4px; }
     .wi-del:hover { color: var(--expense); }
 
@@ -294,7 +299,7 @@
 <body>
 
 <header>
-  <h1>💼 If You Skill — Finanzas</h1>
+  <h1>if U <em>skill</em> — Finanzas</h1>
   <span id="header-date"></span>
 </header>
 
@@ -344,9 +349,9 @@
       <option value="expense">Egresos</option>
     </select>
     <div class="actions">
-      <button class="btn btn-income"  onclick="openModal('income')">＋ Ingreso</button>
-      <button class="btn btn-expense" onclick="openModal('expense')">＋ Egreso</button>
-      <button class="btn btn-export"  onclick="exportCSV()">⬇ Exportar CSV</button>
+      <button class="btn btn-income"  onclick="openModal('income')">&#xFF0B; Ingreso</button>
+      <button class="btn btn-expense" onclick="openModal('expense')">&#xFF0B; Egreso</button>
+      <button class="btn btn-export"  onclick="exportCSV()">&#x2B07; Exportar CSV</button>
     </div>
   </div>
 
@@ -544,14 +549,14 @@
     <p style="font-size:.9rem;color:var(--muted);margin-bottom:22px">Este movimiento es parte de una serie recurrente.</p>
     <div style="display:flex;flex-direction:column;gap:10px">
       <button class="btn btn-expense" style="justify-content:center" onclick="confirmDelete('one')">Solo este movimiento</button>
-      <button class="btn" style="background:#F3F0FF;color:var(--recur);justify-content:center;border:1.5px solid #C4B5FD" onclick="confirmDelete('series')">Eliminar toda la serie</button>
+      <button class="btn" style="background:#ECFDF5;color:#059669;justify-content:center;border:1.5px solid #6EE7B7" onclick="confirmDelete('series')">Eliminar toda la serie</button>
       <button class="btn btn-cancel" style="justify-content:center;background:#F1F0FB" onclick="cancelDelete()">Cancelar</button>
     </div>
   </div>
 </div>
 
 <script>
-  // ── DATA ──────────────────────────────────────────────────────────────────
+  // ── DATA ──────────────────────────────────────────────────────────────────────────
   const STORAGE_KEY    = 'iys_transactions_v1';
   const WITHDRAW_KEY   = 'iys_withdrawals_v1';
   const PARTNERS_KEY   = 'iys_partners_v1';
@@ -873,7 +878,7 @@
     document.getElementById('del-overlay').classList.remove('open');
   }
 
-  // ── EXPORT CSV ────────────────────────────────────────────────────────────
+  // ── EXPORT CSV ───────────────────────────────────────────────────────────
   function exportCSV() {
     const filtered = getFiltered();
     if (!filtered.length) return alert('No hay datos para exportar en el período seleccionado.');
