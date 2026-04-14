@@ -39,7 +39,7 @@
     header span { font-size: .8rem; opacity: .6; }
 
     /* ── LAYOUT ── */
-    main { max-width: 1100px; margin: 0 auto; padding: 32px 20px; }
+    main { max-width: 1160px; margin: 0 auto; padding: 32px 20px; }
 
     /* ── SUMMARY CARDS ── */
     .summary-grid {
@@ -60,7 +60,7 @@
     .card .sub { font-size: .78rem; color: var(--muted); margin-top: 4px; }
 
     /* ── FILTER BAR ── */
-    .filter-bar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 22px; }
+    .filter-bar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
     .filter-bar label { font-size: .85rem; font-weight: 600; color: var(--muted); }
     .filter-bar select {
       padding: 7px 12px; border: 1px solid var(--border); border-radius: 8px;
@@ -68,11 +68,22 @@
     }
     .filter-bar select:focus { outline: 2px solid var(--primary); }
 
+    /* ── BACKUP BAR ── */
+    .backup-bar {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      background: #FFFBEB; border: 1px solid #FDE68A;
+      border-radius: 12px; padding: 10px 16px; margin-bottom: 22px;
+      font-size: .8rem; color: #92400E;
+    }
+    .backup-bar .bb-icon { font-size: 1rem; }
+    .backup-bar .bb-text strong { font-weight: 700; }
+    .backup-bar .bb-actions { display: flex; gap: 8px; margin-left: auto; flex-wrap: wrap; }
+
     /* ── BUTTONS ── */
-    .actions { display: flex; gap: 12px; margin-left: auto; flex-wrap: wrap; }
+    .actions { display: flex; gap: 8px; margin-left: auto; flex-wrap: wrap; }
     .btn {
-      display: inline-flex; align-items: center; gap: 7px;
-      padding: 10px 20px; border-radius: 10px; font-size: .9rem;
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 9px 16px; border-radius: 10px; font-size: .85rem;
       font-weight: 600; cursor: pointer; border: none; transition: opacity .15s, transform .1s;
     }
     .btn:hover { opacity: .88; transform: translateY(-1px); }
@@ -80,6 +91,8 @@
     .btn-income  { background: var(--income);  color: #fff; }
     .btn-expense { background: var(--expense); color: #fff; }
     .btn-export  { background: var(--card); color: var(--primary); border: 1.5px solid var(--primary); }
+    .btn-backup  { background: var(--card); color: var(--primary-dark); border: 1.5px solid var(--border); font-size: .78rem; padding: 7px 12px; }
+    .btn-restore { background: var(--card); color: var(--muted); border: 1.5px solid var(--border); font-size: .78rem; padding: 7px 12px; }
 
     /* ── TABLE ── */
     .table-card {
@@ -94,14 +107,14 @@
     .table-card .table-header span { font-size: .8rem; color: var(--muted); font-weight: 400; }
     table { width: 100%; border-collapse: collapse; }
     thead th {
-      background: #F0F4F8; padding: 12px 20px; text-align: left;
-      font-size: .78rem; text-transform: uppercase; letter-spacing: .5px;
+      background: #F0F4F8; padding: 11px 16px; text-align: left;
+      font-size: .75rem; text-transform: uppercase; letter-spacing: .5px;
       color: var(--muted); font-weight: 700; border-bottom: 1px solid var(--border);
     }
     tbody tr { border-bottom: 1px solid #F1F5F9; transition: background .12s; }
     tbody tr:last-child { border-bottom: none; }
     tbody tr:hover { background: #F0F9F4; }
-    tbody td { padding: 13px 20px; font-size: .9rem; }
+    tbody td { padding: 12px 16px; font-size: .88rem; }
     .badge {
       display: inline-block; padding: 3px 10px; border-radius: 20px;
       font-size: .75rem; font-weight: 600;
@@ -114,11 +127,27 @@
     .empty-state { padding: 48px; text-align: center; color: var(--muted); font-size: .95rem; }
     .empty-state .icon { font-size: 2.5rem; margin-bottom: 10px; }
 
+    /* ── TABLE ACTION BUTTONS ── */
     .btn-del {
       background: none; border: none; cursor: pointer; color: #CBD5E1;
-      font-size: 1rem; padding: 4px; border-radius: 6px; transition: color .15s;
+      font-size: .95rem; padding: 4px 5px; border-radius: 6px; transition: color .15s;
     }
     .btn-del:hover { color: var(--expense); }
+    .btn-act {
+      background: none; border: none; cursor: pointer; color: #CBD5E1;
+      font-size: .95rem; padding: 4px 5px; border-radius: 6px; transition: color .15s;
+    }
+    .btn-act:hover { color: var(--primary); }
+    .btn-act.att:hover { color: #6366F1; }
+
+    /* ── INVOICED BADGE ── */
+    .inv-badge {
+      display: inline-block; padding: 2px 8px; border-radius: 6px;
+      font-size: .75rem; font-weight: 700;
+    }
+    .inv-p1 { background: #D1FAE5; color: #059669; }
+    .inv-p2 { background: #162236; color: #38D16A; }
+    .inv-none { color: var(--muted); font-size: .8rem; }
 
     /* ── MONTHLY ── */
     .monthly-section { margin-top: 28px; }
@@ -147,7 +176,7 @@
     .overlay.open { opacity: 1; pointer-events: all; }
     .modal {
       background: var(--card); border-radius: 18px; padding: 28px 32px;
-      width: 100%; max-width: 460px; box-shadow: 0 8px 40px rgba(91,79,207,.25);
+      width: 100%; max-width: 480px; box-shadow: 0 8px 40px rgba(22,34,54,.25);
       transform: translateY(20px); transition: transform .2s;
       max-height: 92vh; overflow-y: auto;
     }
@@ -160,7 +189,7 @@
     .form-group textarea {
       width: 100%; padding: 10px 14px; border: 1.5px solid var(--border);
       border-radius: 9px; font-size: .95rem; color: var(--text);
-      transition: border-color .15s; background: #FAFAFA;
+      transition: border-color .15s; background: #FAFAFA; font-family: inherit;
     }
     .form-group input:focus,
     .form-group select:focus,
@@ -169,6 +198,33 @@
     .modal-actions { display: flex; gap: 10px; margin-top: 10px; }
     .btn-cancel { background: #F1F5F9; color: var(--text); flex: 1; justify-content: center; }
     .btn-submit { flex: 2; justify-content: center; }
+
+    /* ── FILE UPLOAD ── */
+    .file-drop {
+      border: 1.5px dashed var(--border); border-radius: 9px;
+      padding: 10px 14px; cursor: pointer;
+      transition: border-color .15s, background .15s;
+      background: #FAFAFA; font-size: .88rem; color: var(--muted);
+      display: flex; align-items: center; gap: 8px; user-select: none;
+    }
+    .file-drop:hover { border-color: var(--primary); color: var(--primary-dark); }
+    .file-drop.has-file { border-color: var(--primary); background: #F0FFF6; color: #059669; font-weight: 600; }
+    .existing-file {
+      display: flex; align-items: center; gap: 8px;
+      margin-top: 7px; padding: 7px 10px;
+      background: #EEF2FF; border-radius: 8px;
+      font-size: .82rem; color: #4F46E5; font-weight: 600;
+    }
+    .existing-file span { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .existing-file .ef-view { background: none; border: none; cursor: pointer; color: #4F46E5; font-size: .78rem; font-weight: 700; text-decoration: underline; padding: 0; }
+    .existing-file .ef-del  { background: none; border: none; cursor: pointer; color: var(--expense); font-size: .9rem; padding: 0 2px; margin-left: 2px; }
+
+    /* ── SERIES NOTE ── */
+    .series-note {
+      background: #FFF7ED; border: 1px solid #FDE68A;
+      border-radius: 8px; padding: 9px 12px;
+      font-size: .8rem; color: #92400E; margin-bottom: 14px;
+    }
 
     /* ── RECURRING TOGGLE ── */
     .recur-row {
@@ -182,13 +238,9 @@
     .recur-row .recur-label { font-size: .9rem; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 8px; }
     .recur-row .recur-label span { font-size: .78rem; font-weight: 400; color: var(--muted); }
 
-    /* Toggle switch */
     .toggle { position: relative; width: 40px; height: 22px; flex-shrink: 0; }
     .toggle input { opacity: 0; width: 0; height: 0; }
-    .slider {
-      position: absolute; inset: 0; background: #CBD5E1;
-      border-radius: 22px; transition: .25s;
-    }
+    .slider { position: absolute; inset: 0; background: #CBD5E1; border-radius: 22px; transition: .25s; }
     .slider:before {
       content: ''; position: absolute;
       height: 16px; width: 16px; left: 3px; bottom: 3px;
@@ -198,11 +250,9 @@
     input:checked + .slider { background: var(--recur); }
     input:checked + .slider:before { transform: translateX(18px); }
 
-    /* Recurring options panel */
     .recur-panel {
       background: #ECFDF5; border: 1.5px solid #6EE7B7;
-      border-radius: 10px; padding: 14px;
-      margin-bottom: 14px; display: none;
+      border-radius: 10px; padding: 14px; margin-bottom: 14px; display: none;
     }
     .recur-panel.visible { display: block; }
     .recur-panel .rp-title { font-size: .78rem; font-weight: 700; color: var(--recur); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
@@ -210,23 +260,18 @@
     .recur-panel .form-group { margin-bottom: 0; }
     .recur-preview {
       margin-top: 10px; font-size: .78rem; color: #059669;
-      background: #D1FAE5; border-radius: 7px; padding: 7px 10px;
-      font-weight: 600;
+      background: #D1FAE5; border-radius: 7px; padding: 7px 10px; font-weight: 600;
     }
 
     /* ── PARTNER SECTION ── */
-    .partner-section {
-      margin-bottom: 28px;
-    }
+    .partner-section { margin-bottom: 28px; }
     .partner-section-header {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 14px;
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;
     }
     .partner-section-header h2 { font-size: 1rem; font-weight: 700; }
     .partner-section-header button {
       background: none; border: none; font-size: .8rem; color: var(--muted);
-      cursor: pointer; padding: 4px 8px; border-radius: 6px; font-weight: 600;
-      transition: background .15s;
+      cursor: pointer; padding: 4px 8px; border-radius: 6px; font-weight: 600; transition: background .15s;
     }
     .partner-section-header button:hover { background: var(--border); color: var(--text); }
 
@@ -235,12 +280,10 @@
 
     .partner-card {
       background: var(--card); border-radius: 14px; padding: 22px 24px;
-      box-shadow: var(--shadow); border: 2px solid var(--border);
-      position: relative;
+      box-shadow: var(--shadow); border: 2px solid var(--border); position: relative;
     }
     .partner-card.p1 { border-color: #38D16A; }
     .partner-card.p2 { border-color: #162236; }
-
     .partner-avatar {
       width: 40px; height: 40px; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
@@ -248,22 +291,15 @@
     }
     .p1 .partner-avatar { background: #D1FAE5; color: #059669; }
     .p2 .partner-avatar { background: #162236; color: #38D16A; }
-
     .partner-name { font-size: 1.05rem; font-weight: 700; margin-bottom: 14px; }
-
     .partner-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid #F1F5F9; }
     .partner-row:last-of-type { border-bottom: none; }
     .partner-row .pr-label { font-size: .78rem; color: var(--muted); font-weight: 600; }
     .partner-row .pr-val   { font-size: .9rem; font-weight: 700; }
-
-    .balance-chip {
-      margin-top: 14px; padding: 10px 14px; border-radius: 10px;
-      font-size: .85rem; font-weight: 700; text-align: center;
-    }
-    .balance-chip.ok     { background: #DCFCE7; color: #16A34A; }
-    .balance-chip.debt   { background: #FEE2E2; color: #DC2626; }
-    .balance-chip.even   { background: #ECFDF5; color: var(--primary); }
-
+    .balance-chip { margin-top: 14px; padding: 10px 14px; border-radius: 10px; font-size: .85rem; font-weight: 700; text-align: center; }
+    .balance-chip.ok   { background: #DCFCE7; color: #16A34A; }
+    .balance-chip.debt { background: #FEE2E2; color: #DC2626; }
+    .balance-chip.even { background: #ECFDF5; color: var(--primary); }
     .btn-withdraw {
       margin-top: 14px; width: 100%; padding: 9px; border-radius: 9px; border: none;
       font-size: .85rem; font-weight: 700; cursor: pointer; transition: opacity .15s;
@@ -271,7 +307,6 @@
     .p1 .btn-withdraw { background: #D1FAE5; color: #059669; }
     .p2 .btn-withdraw { background: #162236; color: #38D16A; }
     .btn-withdraw:hover { opacity: .8; }
-
     .withdraw-history { margin-top: 14px; }
     .withdraw-history .wh-title { font-size: .72rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
     .withdraw-item { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px dashed #E2E8F0; font-size: .8rem; }
@@ -282,10 +317,8 @@
     .wi-del { background: none; border: none; cursor: pointer; color: #CBD5E1; font-size: .85rem; padding: 2px 4px; border-radius: 4px; }
     .wi-del:hover { color: var(--expense); }
 
-    /* ── PARTNER CONFIG MODAL ── */
     .cfg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
-    /* responsive */
     @media (max-width: 600px) {
       header { padding: 0 16px; }
       main { padding: 20px 12px; }
@@ -293,6 +326,9 @@
       .btn { flex: 1; justify-content: center; }
       .recur-grid { grid-template-columns: 1fr; }
       .cfg-grid { grid-template-columns: 1fr; }
+      .backup-bar .bb-actions { margin-left: 0; }
+      thead th.col-inv { display: none; }
+      tbody td.col-inv { display: none; }
     }
   </style>
 </head>
@@ -349,9 +385,19 @@
       <option value="expense">Egresos</option>
     </select>
     <div class="actions">
-      <button class="btn btn-income"  onclick="openModal('income')">&#xFF0B; Ingreso</button>
-      <button class="btn btn-expense" onclick="openModal('expense')">&#xFF0B; Egreso</button>
-      <button class="btn btn-export"  onclick="exportCSV()">&#x2B07; Exportar CSV</button>
+      <button class="btn btn-income"  onclick="openModal('income')">＋ Ingreso</button>
+      <button class="btn btn-expense" onclick="openModal('expense')">＋ Egreso</button>
+      <button class="btn btn-export"  onclick="exportCSV()">⬇ CSV</button>
+    </div>
+  </div>
+
+  <!-- BACKUP BAR -->
+  <div class="backup-bar">
+    <span class="bb-icon">💾</span>
+    <span class="bb-text"><strong>Datos guardados en este navegador.</strong> Para usar en otra compu o no perder nada, exportá un backup JSON.</span>
+    <div class="bb-actions">
+      <button class="btn btn-backup" onclick="exportJSON()">⬇ Exportar backup</button>
+      <button class="btn btn-restore" onclick="importJSON()">⬆ Importar backup</button>
     </div>
   </div>
 
@@ -367,9 +413,10 @@
           <th>Fecha</th>
           <th>Descripción</th>
           <th>Categoría</th>
+          <th class="col-inv">Factura</th>
           <th>Tipo</th>
           <th style="text-align:right">Monto</th>
-          <th></th>
+          <th style="text-align:right"></th>
         </tr>
       </thead>
       <tbody id="tx-body"></tbody>
@@ -395,8 +442,8 @@
     <div class="partner-grid">
       <div class="partner-card p1">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-          <div class="partner-avatar" id="p1-avatar" style="width:32px;height:32px;font-size:.85rem;margin:0">S1</div>
-          <div class="partner-name" id="p1-name" style="font-size:.9rem;margin:0">Socia 1</div>
+          <div class="partner-avatar" id="p1-avatar" style="width:32px;height:32px;font-size:.85rem;margin:0">M</div>
+          <div class="partner-name" id="p1-name" style="font-size:.9rem;margin:0">Meri</div>
         </div>
         <div class="partner-row"><span class="pr-label">Le corresponde (50%)</span><span class="pr-val" id="p1-share" style="font-size:.82rem">$0</span></div>
         <div class="partner-row"><span class="pr-label">Ya retiró</span><span class="pr-val" id="p1-withdrawn" style="font-size:.82rem">$0</span></div>
@@ -406,8 +453,8 @@
       </div>
       <div class="partner-card p2">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-          <div class="partner-avatar" id="p2-avatar" style="width:32px;height:32px;font-size:.85rem;margin:0">S2</div>
-          <div class="partner-name" id="p2-name" style="font-size:.9rem;margin:0">Socia 2</div>
+        <div class="partner-avatar" id="p2-avatar" style="width:32px;height:32px;font-size:.85rem;margin:0">A</div>
+          <div class="partner-name" id="p2-name" style="font-size:.9rem;margin:0">Agus</div>
         </div>
         <div class="partner-row"><span class="pr-label">Le corresponde (50%)</span><span class="pr-val" id="p2-share" style="font-size:.82rem">$0</span></div>
         <div class="partner-row"><span class="pr-label">Ya retiró</span><span class="pr-val" id="p2-withdrawn" style="font-size:.82rem">$0</span></div>
@@ -419,10 +466,17 @@
   </div>
 </main>
 
-<!-- MODAL -->
+<!-- ═══════════ MODALS ═══════════ -->
+
+<!-- MAIN TRANSACTION MODAL +
 <div class="overlay" id="modal-overlay" onclick="closeOnOverlay(event)">
   <div class="modal">
     <h2 id="modal-title">Agregar movimiento</h2>
+
+    <!-- Series note (edit mode only) -->
+    <div class="series-note" id="edit-series-note" style="display:none">
+      🔁 Este movimiento es parte de una serie recurrente. Solo se editará esta instancia.
+    </div>
 
     <div class="form-group">
       <label>Fecha *</label>
@@ -446,12 +500,35 @@
       </select>
     </div>
     <div class="form-group">
+      <label>¿Quién facturó?</label>
+      <select id="f-invoiced">
+        <option value="">— Sin especificar —</option>
+      </select>
+    </div>
+    <div class="form-group">
       <label>Monto (ARS) *</label>
       <input type="number" id="f-amount" placeholder="0.00" min="0" step="0.01" />
     </div>
     <div class="form-group">
       <label>Notas (opcional)</label>
       <textarea id="f-notes" placeholder="Observaciones adicionales..."></textarea>
+    </div>
+
+    <!-- COMPROBANTE UPLOAD -->
+    <div class="form-group">
+      <label>Comprobante de pago (opcional)</label>
+      <div class="file-drop" id="file-drop" onclick="document.getElementById('f-receipt').click()">
+        <span>📎</span>
+        <span id="f-receipt-label">Adjuntar imagen o PDF...</span>
+        <input type="file" id="f-receipt" accept="image/*,.pdf" onchange="onFileSelect()" style="display:none" />
+      </div>
+      <!-- Shown in edit mode when receipt already exists -->
+      <div class="existing-file" id="existing-file" style="display:none">
+        <span>📎</span>
+        <span id="existing-file-name">archivo.pdf</span>
+        <button class="ef-view" onclick="viewReceiptFromEdit(event)">Ver</button>
+        <button class="ef-del" onclick="removeExistingFile(event)" title="Eliminar comprobante">✕</button>
+      </div>
     </div>
 
     <!-- RECURRING TOGGLE -->
@@ -556,42 +633,130 @@
 </div>
 
 <script>
-  // ── DATA ──────────────────────────────────────────────────────────────────────────
-  const STORAGE_KEY    = 'iys_transactions_v1';
-  const WITHDRAW_KEY   = 'iys_withdrawals_v1';
-  const PARTNERS_KEY   = 'iys_partners_v1';
-  let transactions     = [];
-  let withdrawals      = [];
-  let partnerNames     = { p1: 'Socia 1', p2: 'Socia 2' };
-  let pendingDeleteId  = null;
+  // ── STORAGE KEYS ─────────────────────────────────────────────────────────────
+  const STORAGE_KEY  = 'iys_transactions_v1';
+  const WITHDRAW_KEY = 'iys_withdrawals_v1';
+  const PARTNERS_KEY = 'iys_partners_v1';
 
+  // ── STATE ────────────────────────────────────────────────────────────────────
+  let transactions    = [];
+  let withdrawals     = [];
+  let partnerNames    = { p1: 'Meri', p2: 'Agus' };
+  let pendingDeleteId = null;
+  let receiptIds      = new Set();   // txIds that have an attached file
+  let _editReceiptId  = null;        // txId being edited (for file ops)
+  let _removeFile     = false;       // user asked to remove existing file
+
+  // ── INDEXEDDB ────────────────────────────────────────────────────────────────
+  const DB_NAME = 'iys_files_v1';
+  let db = null;
+
+  function openDB() {
+    return new Promise((res, rej) => {
+      const r = indexedDB.open(DB_NAME, 1);
+      r.onupgradeneeded = e => e.target.result.createObjectStore('receipts', { keyPath: 'txId' });
+      r.onsuccess  = e => { db = e.target.result; res(db); };
+      r.onerror    = e => rej(e.target.error);
+    });
+  }
+
+  function dbPut(rec) {
+    if (!db) return Promise.resolve();
+    return new Promise((res, rej) => {
+      const tx = db.transaction('receipts', 'readwrite');
+      tx.objectStore('receipts').put(rec);
+      tx.oncomplete = () => res();
+      tx.onerror    = e => rej(e.target.error);
+    });
+  }
+
+  function dbGet(txId) {
+    if (!db) return Promise.resolve(null);
+    return new Promise(res => {
+      const tx = db.transaction('receipts', 'readonly');
+      const r = tx.objectStore('receipts').get(txId);
+      r.onsuccess = e => res(e.target.result || null);
+      r.onerror   = () => res(null);
+    });
+  }
+
+  function dbDelete(txId) {
+    if (!db) return Promise.resolve();
+    return new Promise(res => {
+      const tx = db.transaction('receipts', 'readwrite');
+      tx.objectStore('receipts').delete(txId);
+      tx.oncomplete = () => res();
+      tx.onerror    = () => res();
+    });
+  }
+
+  function dbGetAll() {
+    if (!db) return Promise.resolve([]);
+    return new Promise(res => {
+      const tx = db.transaction('receipts', 'readonly');
+      const r = tx.objectStore('receipts').getAll();
+      r.onsuccess = e => res(e.target.result || []);
+      r.onerror   = () => res([]);
+    });
+  }
+
+  function dbClearAll() {
+    if (!db) return Promise.resolve();
+    return new Promise(res => {
+      const tx = db.transaction('receipts', 'readwrite');
+      tx.objectStore('receipts').clear();
+      tx.oncomplete = () => res();
+      tx.onerror    = () => res();
+    });
+  }
+
+  async function loadReceiptIds() {
+    const all = await dbGetAll();
+    receiptIds = new Set(all.map(r => r.txId));
+  }
+
+  async function saveReceiptFile(txId, file) {
+    return new Promise((res, rej) => {
+      const reader = new FileReader();
+      reader.onload = async e => {
+        await dbPut({ txId, name: file.name, mimeType: file.type, data: e.target.result });
+        receiptIds.add(txId);
+        res();
+      };
+      reader.onerror = rej;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // ── LOCALSTORAGE ─────────────────────────────────────────────────────────────
   function loadData() {
     try { transactions  = JSON.parse(localStorage.getItem(STORAGE_KEY)  || '[]'); } catch(e) { transactions  = []; }
     try { withdrawals   = JSON.parse(localStorage.getItem(WITHDRAW_KEY) || '[]'); } catch(e) { withdrawals   = []; }
-    try { partnerNames  = JSON.parse(localStorage.getItem(PARTNERS_KEY) || 'null') || { p1:'Socia 1', p2:'Socia 2' }; } catch(e) {}
+    try { partnerNames  = JSON.parse(localStorage.getItem(PARTNERS_KEY) || 'null') || { p1:'Meri', p2:'Agus' }; } catch(e) {}
   }
   function saveData()      { localStorage.setItem(STORAGE_KEY,  JSON.stringify(transactions)); }
   function saveWithdraws() { localStorage.setItem(WITHDRAW_KEY, JSON.stringify(withdrawals));  }
   function savePartners()  { localStorage.setItem(PARTNERS_KEY, JSON.stringify(partnerNames)); }
 
-  // ── HELPERS ───────────────────────────────────────────────────────────────
-  const months = ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
-                  'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  // ── HELPERS ───────────────────────────────────────────────────────────────────
+  const months   = ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
+                    'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
   const freqLabel = { weekly:'Semanal', monthly:'Mensual', annual:'Anual' };
 
   function fmt(n) {
     const s = Math.abs(n).toLocaleString('es-AR', {minimumFractionDigits:2, maximumFractionDigits:2});
-    return (n < 0 ? '−' : '') + '$ ' + s;
+    return (n < 0 ? '\u2212' : '') + '$ ' + s;
   }
   function fmtDate(iso) { const [y,m,d]=iso.split('-'); return `${d}/${m}/${y}`; }
   function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
+  function esc(s) {
+    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
 
-  // ── ADD MONTHS SAFELY ─────────────────────────────────────────────────────
   function addMonths(dateStr, n) {
     const d = new Date(dateStr + 'T00:00:00');
     const day = d.getDate();
-    d.setDate(1);
-    d.setMonth(d.getMonth() + n);
+    d.setDate(1); d.setMonth(d.getMonth() + n);
     d.setDate(Math.min(day, new Date(d.getFullYear(), d.getMonth()+1, 0).getDate()));
     return d.toISOString().slice(0,10);
   }
@@ -606,16 +771,11 @@
     return d.toISOString().slice(0,10);
   }
 
-  // ── GENERATE RECURRING DATES ──────────────────────────────────────────────
   function generateDates(startDate, freq, until) {
-    const dates = [];
-    let current = startDate;
-    const limit = until;
-    let safety = 0;
-    while (current <= limit && safety < 500) {
-      dates.push(current);
-      safety++;
-      if (freq === 'weekly')  current = addDays(current, 7);
+    const dates = []; let current = startDate; let safety = 0;
+    while (current <= until && safety < 500) {
+      dates.push(current); safety++;
+      if      (freq === 'weekly')  current = addDays(current, 7);
       else if (freq === 'monthly') current = addMonths(current, 1);
       else if (freq === 'annual')  current = addYears(current, 1);
       else break;
@@ -623,15 +783,24 @@
     return dates;
   }
 
-  // ── RECURRING UI ──────────────────────────────────────────────────────────
+  // ── INVOICED SELECT ───────────────────────────────────────────────────────────
+  function updateInvoicedSelect(currentVal) {
+    const sel = document.getElementById('f-invoiced');
+    sel.innerHTML = `
+      <option value="">\u2014 Sin especificar \u2014</option>
+      <option value="${esc(partnerNames.p1)}">${esc(partnerNames.p1)}</option>
+      <option value="${esc(partnerNames.p2)}">${esc(partnerNames.p2)}</option>
+    `;
+    if (currentVal !== undefined) sel.value = currentVal;
+  }
+
+  // ── RECURRING UI ──────────────────────────────────────────────────────────────
   function toggleRecur() {
-    const cb    = document.getElementById('f-recur');
-    // If toggled via row click (not checkbox), flip the checkbox
-    const row   = document.getElementById('recur-row');
-    const panel = document.getElementById('recur-panel');
-    // cb.checked might already be updated if checkbox fired; row click will flip
+    const cb  = document.getElementById('f-recur');
+    const row = document.getElementById('recur-row');
+    const pan = document.getElementById('recur-panel');
     row.classList.toggle('active', cb.checked);
-    panel.classList.toggle('visible', cb.checked);
+    pan.classList.toggle('visible', cb.checked);
     if (cb.checked) updateRecurPreview();
   }
 
@@ -641,20 +810,59 @@
     const until = document.getElementById('f-until').value;
     const prev  = document.getElementById('recur-preview');
     if (!start || !until || !document.getElementById('f-recur').checked) { prev.textContent = ''; return; }
-    if (until < start) { prev.textContent = '⚠ La fecha de fin debe ser posterior a la fecha de inicio.'; return; }
+    if (until < start) { prev.textContent = '\u26a0 La fecha de fin debe ser posterior a la fecha de inicio.'; return; }
     const dates = generateDates(start, freq, until);
-    const fl = freqLabel[freq];
-    prev.textContent = `✓ Se generarán ${dates.length} movimiento${dates.length!==1?'s':''} (${fl}) — del ${fmtDate(dates[0])} al ${fmtDate(dates[dates.length-1])}`;
+    prev.textContent = `\u2713 Se generar\u00e1n ${dates.length} movimiento${dates.length!==1?'s':''} (${freqLabel[freq]}) \u2014 del ${fmtDate(dates[0])} al ${fmtDate(dates[dates.length-1])}`;
   }
 
-  // ── YEAR SELECTOR ─────────────────────────────────────────────────────────
+  // ── FILE UPLOAD UI ────────────────────────────────────────────────────────────
+  function onFileSelect() {
+    const fi    = document.getElementById('f-receipt');
+    const label = document.getElementById('f-receipt-label');
+    const drop  = document.getElementById('file-drop');
+    if (fi.files.length) {
+      label.textContent = '\u2713 ' + fi.files[0].name;
+      drop.classList.add('has-file');
+    } else {
+      label.textContent = 'Adjuntar imagen o PDF...';
+      drop.classList.remove('has-file');
+    }
+  }
+
+  function removeExistingFile(e) {
+    e.stopPropagation();
+    _removeFile = true;
+    document.getElementById('existing-file').style.display = 'none';
+  }
+
+  async function viewReceiptFromEdit(e) {
+    e.stopPropagation();
+    if (_editReceiptId) viewReceipt(_editReceiptId);
+  }
+
+  async function viewReceipt(txId) {
+    const rec = await dbGet(txId);
+    if (!rec) return alert('Comprobante no encontrado.');
+    const w = window.open('', '_blank');
+    if (!w) {
+      // Popup blocked — download instead
+      const a = document.createElement('a');
+      a.href = rec.data; a.download = rec.name; a.click();
+      return;
+    }
+    if (rec.mimeType === 'application/pdf') {
+      w.document.write(`<!DOCTYPE html><html><head><title>${esc(rec.name)}</title></head><body style="margin:0;height:100vh"><embed src="${rec.data}" width="100%" height="100%" type="application/pdf"></body></html>`);
+    } else {
+      w.document.write(`<!DOCTYPE html><html><head><title>${esc(rec.name)}</title></head><body style="margin:0;background:#111;display:flex;justify-content:center;min-height:100vh;padding:10px"><img src="${rec.data}" style="max-width:100%;object-fit:contain"></body></html>`);
+    }
+  }
+
+  // ── YEAR SELECTOR ────────────────────────────────────────────────────────────
   function populateYears() {
-    const sel  = document.getElementById('filter-year');
-    const now  = new Date().getFullYear();
-    const yrs  = new Set(transactions.map(t => t.date.slice(0,4)));
-    yrs.add(String(now));
-    yrs.add(String(now + 1));
-    yrs.add(String(now + 2));
+    const sel = document.getElementById('filter-year');
+    const now = new Date().getFullYear();
+    const yrs = new Set(transactions.map(t => t.date.slice(0,4)));
+    yrs.add(String(now)); yrs.add(String(now+1)); yrs.add(String(now+2));
     [...yrs].sort().reverse().forEach(y => {
       const o = document.createElement('option');
       o.value = y; o.textContent = y; sel.appendChild(o);
@@ -667,16 +875,15 @@
     if (![...sel.options].some(o=>o.value===y)) {
       const o = document.createElement('option');
       o.value = y; o.textContent = y;
-      // insert sorted
-      let inserted = false;
-      for (let i = 0; i < sel.options.length; i++) {
-        if (y > sel.options[i].value) { sel.insertBefore(o, sel.options[i]); inserted=true; break; }
+      let ins = false;
+      for (let i=0; i<sel.options.length; i++) {
+        if (y > sel.options[i].value) { sel.insertBefore(o, sel.options[i]); ins=true; break; }
       }
-      if (!inserted) sel.appendChild(o);
+      if (!ins) sel.appendChild(o);
     }
   }
 
-  // ── FILTER ────────────────────────────────────────────────────────────────
+  // ── FILTER ────────────────────────────────────────────────────────────────────
   function getFiltered() {
     const year  = document.getElementById('filter-year').value;
     const month = document.getElementById('filter-month').value;
@@ -690,14 +897,14 @@
     }).sort((a,b) => b.date.localeCompare(a.date));
   }
 
-  // ── RENDER ────────────────────────────────────────────────────────────────
+  // ── RENDER ───────────────────────────────────────────────────────────────────
   function render() {
     const year     = document.getElementById('filter-year').value;
     const filtered = getFiltered();
     const yearTx   = transactions.filter(t => t.date.startsWith(year));
 
-    const totalIncome  = filtered.filter(t=>t.type==='income').reduce((a,t)=>a+t.amount,0);
-    const totalExpense = filtered.filter(t=>t.type==='expense').reduce((a,t)=>a+t.amount,0);
+    const totalIncome   = filtered.filter(t=>t.type==='income').reduce((a,t)=>a+t.amount,0);
+    const totalExpense  = filtered.filter(t=>t.type==='expense').reduce((a,t)=>a+t.amount,0);
     const annualIncome  = yearTx.filter(t=>t.type==='income').reduce((a,t)=>a+t.amount,0);
     const annualExpense = yearTx.filter(t=>t.type==='expense').reduce((a,t)=>a+t.amount,0);
     const annualBalance = annualIncome - annualExpense;
@@ -709,7 +916,6 @@
     const mRes = mTx.filter(t=>t.type==='income').reduce((a,t)=>a+t.amount,0)
                - mTx.filter(t=>t.type==='expense').reduce((a,t)=>a+t.amount,0);
 
-    // Cards
     document.getElementById('s-balance').textContent  = fmt(annualBalance);
     document.getElementById('s-balance').className    = 'amount '+(annualBalance>=0?'pos':'neg');
     document.getElementById('s-year').textContent     = `Balance acumulado ${year}`;
@@ -719,7 +925,6 @@
     document.getElementById('s-month').className      = 'amount '+(mRes>=0?'pos':'neg');
     document.getElementById('s-month-label').textContent = months[now.getMonth()]+' '+cy;
 
-    // Table
     const tbody = document.getElementById('tx-body');
     const empty = document.getElementById('empty-state');
     tbody.innerHTML = '';
@@ -729,20 +934,34 @@
       empty.style.display = 'none';
       filtered.forEach(t => {
         const tr   = document.createElement('tr');
-        const sign = t.type==='income' ? '+' : '−';
+        const sign = t.type==='income' ? '+' : '\u2212';
         const recurBadge = t.seriesId
-          ? `<span class="badge badge-recur">↻ ${freqLabel[t.freq]||'Recurrente'}</span>`
+          ? `<span class="badge badge-recur">\u21bb ${freqLabel[t.freq]||'Recurrente'}</span>`
           : '';
+        // Invoiced by badge
+        const isP1 = t.invoicedBy && t.invoicedBy === partnerNames.p1;
+        const isP2 = t.invoicedBy && t.invoicedBy === partnerNames.p2;
+        const invBadge = t.invoicedBy
+          ? `<span class="inv-badge ${isP1?'inv-p1':isP2?'inv-p2':''}">${esc(t.invoicedBy)}</span>`
+          : `<span class="inv-none">\u2014</span>`;
+        // Action buttons
+        const attBtn  = receiptIds.has(t.id)
+          ? `<button class="btn-act att" onclick="viewReceipt('${t.id}')" title="Ver comprobante">\uD83D\uDCCE</button>`
+          : '';
+        const editBtn = `<button class="btn-act" onclick="editTransaction('${t.id}')" title="Editar">\u270F\uFE0F</button>`;
+        const delBtn  = `<button class="btn-del" onclick="deleteTransaction('${t.id}')" title="Eliminar">\u2715</button>`;
+
         tr.innerHTML = `
           <td>${fmtDate(t.date)}</td>
           <td>
             <div style="font-weight:600">${esc(t.desc)}${recurBadge}</div>
-            ${t.notes ? `<div style="font-size:.78rem;color:var(--muted)">${esc(t.notes)}</div>`:''}
+            ${t.notes ? `<div style="font-size:.76rem;color:var(--muted)">${esc(t.notes)}</div>`:''}
           </td>
-          <td><span style="font-size:.82rem;color:var(--muted)">${esc(t.cat||'—')}</span></td>
+          <td><span style="font-size:.8rem;color:var(--muted)">${esc(t.cat||'\u2014')}</span></td>
+          <td class="col-inv">${invBadge}</td>
           <td><span class="badge badge-${t.type}">${t.type==='income'?'Ingreso':'Egreso'}</span></td>
           <td style="text-align:right" class="amount-${t.type}">${sign} ${fmt(t.amount)}</td>
-          <td><button class="btn-del" onclick="deleteTransaction('${t.id}')" title="Eliminar">✕</button></td>
+          <td style="text-align:right;white-space:nowrap">${attBtn}${editBtn}${delBtn}</td>
         `;
         tbody.appendChild(tr);
       });
@@ -769,84 +988,169 @@
       pill.className = 'month-pill';
       pill.innerHTML = `
         <div class="m-name">${months[m-1]}</div>
-        <div class="m-income">↑ ${fmt(inc)}</div>
-        <div class="m-expense">↓ ${fmt(exp)}</div>
+        <div class="m-income">\u2191 ${fmt(inc)}</div>
+        <div class="m-expense">\u2193 ${fmt(exp)}</div>
         <div class="m-result ${res>=0?'pos':'neg'}" style="${!has?'color:var(--muted)':''}">${has?fmt(res):'Sin datos'}</div>`;
       grid.appendChild(pill);
     }
   }
 
-  function esc(s) {
-    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
-
-  // ── MODAL ─────────────────────────────────────────────────────────────────
+  // ── MODAL OPEN (CREATE) ───────────────────────────────────────────────────────
   function openModal(type) {
-    document.getElementById('f-type').value    = type;
-    document.getElementById('f-edit-id').value = '';
-    document.getElementById('f-date').value    = new Date().toISOString().slice(0,10);
-    document.getElementById('f-desc').value    = '';
-    document.getElementById('f-cat').value     = '';
-    document.getElementById('f-amount').value  = '';
-    document.getElementById('f-notes').value   = '';
-    document.getElementById('f-recur').checked = false;
-    document.getElementById('f-freq').value    = 'monthly';
-    // Default "until" = end of current year
-    document.getElementById('f-until').value   = `${new Date().getFullYear()}-12-31`;
+    document.getElementById('f-type').value     = type;
+    document.getElementById('f-edit-id').value  = '';
+    document.getElementById('f-date').value     = new Date().toISOString().slice(0,10);
+    document.getElementById('f-desc').value     = '';
+    document.getElementById('f-cat').value      = '';
+    document.getElementById('f-amount').value   = '';
+    document.getElementById('f-notes').value    = '';
+    document.getElementById('f-recur').checked  = false;
+    document.getElementById('f-freq').value     = 'monthly';
+    document.getElementById('f-until').value    = `${new Date().getFullYear()}-12-31`;
     document.getElementById('recur-row').classList.remove('active');
     document.getElementById('recur-panel').classList.remove('visible');
     document.getElementById('recur-preview').textContent = '';
+    document.getElementById('recur-row').style.display = '';
+    document.getElementById('edit-series-note').style.display = 'none';
+
+    // File reset
+    document.getElementById('f-receipt').value = '';
+    document.getElementById('f-receipt-label').textContent = 'Adjuntar imagen o PDF...';
+    document.getElementById('file-drop').classList.remove('has-file');
+    document.getElementById('existing-file').style.display = 'none';
+    _editReceiptId = null; _removeFile = false;
+
+    updateInvoicedSelect('');
 
     const isInc = type === 'income';
-    document.getElementById('modal-title').textContent = isInc ? '＋ Registrar ingreso' : '＋ Registrar egreso';
+    document.getElementById('modal-title').textContent = isInc ? '\uFF0B Registrar ingreso' : '\uFF0B Registrar egreso';
     document.getElementById('btn-submit').className = 'btn btn-submit '+(isInc?'btn-income':'btn-expense');
     document.getElementById('modal-overlay').classList.add('open');
     setTimeout(()=>document.getElementById('f-desc').focus(), 150);
   }
 
-  function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
+  // ── MODAL OPEN (EDIT) ─────────────────────────────────────────────────────────
+  async function editTransaction(id) {
+    const tx = transactions.find(t => t.id === id);
+    if (!tx) return;
+
+    document.getElementById('f-type').value      = tx.type;
+    document.getElementById('f-edit-id').value   = tx.id;
+    document.getElementById('f-date').value      = tx.date;
+    document.getElementById('f-desc').value      = tx.desc;
+    document.getElementById('f-cat').value       = tx.cat  || '';
+    document.getElementById('f-amount').value    = tx.amount;
+    document.getElementById('f-notes').value     = tx.notes || '';
+    document.getElementById('f-recur').checked   = false;
+    document.getElementById('recur-row').classList.remove('active');
+    document.getElementById('recur-panel').classList.remove('visible');
+    document.getElementById('recur-row').style.display   = 'none';  // hide recurring in edit
+    document.getElementById('edit-series-note').style.display = tx.seriesId ? 'block' : 'none';
+
+    // File reset
+    document.getElementById('f-receipt').value = '';
+    document.getElementById('f-receipt-label').textContent = 'Adjuntar nuevo comprobante...';
+    document.getElementById('file-drop').classList.remove('has-file');
+    _removeFile = false;
+    _editReceiptId = id;
+
+    updateInvoicedSelect(tx.invoicedBy || '');
+
+    // Show existing receipt info if any
+    const existingDiv = document.getElementById('existing-file');
+    if (receiptIds.has(id)) {
+      const rec = await dbGet(id);
+      if (rec) {
+        document.getElementById('existing-file-name').textContent = rec.name;
+        existingDiv.style.display = 'flex';
+      } else {
+        existingDiv.style.display = 'none';
+      }
+    } else {
+      existingDiv.style.display = 'none';
+    }
+
+    const isInc = tx.type === 'income';
+    document.getElementById('modal-title').textContent = `\u270F Editar ${isInc?'ingreso':'egreso'}`;
+    document.getElementById('btn-submit').className = 'btn btn-submit '+(isInc?'btn-income':'btn-expense');
+    document.getElementById('modal-overlay').classList.add('open');
+    setTimeout(() => document.getElementById('f-desc').focus(), 150);
+  }
+
+  function closeModal() {
+    document.getElementById('modal-overlay').classList.remove('open');
+    _removeFile = false; _editReceiptId = null;
+  }
   function closeOnOverlay(e) { if (e.target===document.getElementById('modal-overlay')) closeModal(); }
   document.addEventListener('keydown', e => { if(e.key==='Escape') { closeModal(); cancelDelete(); } });
 
-  // ── SAVE ──────────────────────────────────────────────────────────────────
-  function saveTransaction() {
-    const date   = document.getElementById('f-date').value.trim();
-    const desc   = document.getElementById('f-desc').value.trim();
-    const cat    = document.getElementById('f-cat').value;
-    const amount = parseFloat(document.getElementById('f-amount').value);
-    const notes  = document.getElementById('f-notes').value.trim();
-    const type   = document.getElementById('f-type').value;
-    const recur  = document.getElementById('f-recur').checked;
-    const freq   = document.getElementById('f-freq').value;
-    const until  = document.getElementById('f-until').value;
+  // ── SAVE TRANSACTION ──────────────────────────────────────────────────────────
+  async function saveTransaction() {
+    const editId     = document.getElementById('f-edit-id').value;
+    const date       = document.getElementById('f-date').value.trim();
+    const desc       = document.getElementById('f-desc').value.trim();
+    const cat        = document.getElementById('f-cat').value;
+    const amount     = parseFloat(document.getElementById('f-amount').value);
+    const notes      = document.getElementById('f-notes').value.trim();
+    const type       = document.getElementById('f-type').value;
+    const invoicedBy = document.getElementById('f-invoiced').value;
+    const fileInput  = document.getElementById('f-receipt');
 
-    if (!date)   return alert('Por favor indicá una fecha.');
-    if (!desc)   return alert('Por favor completá la descripción.');
+    if (!date)              return alert('Por favor indic\u00e1 una fecha.');
+    if (!desc)              return alert('Por favor complet\u00e1 la descripci\u00f3n.');
     if (!amount || amount <= 0) return alert('El monto debe ser mayor a 0.');
 
-    if (recur) {
-      if (!until)        return alert('Indicá la fecha hasta la cual se repite.');
-      if (until < date)  return alert('La fecha "hasta" debe ser posterior a la fecha de inicio.');
+    if (editId) {
+      // ── EDIT MODE ──
+      const idx = transactions.findIndex(t => t.id === editId);
+      if (idx === -1) return;
+      transactions[idx] = { ...transactions[idx], date, desc, cat, amount, notes, type, invoicedBy };
 
-      const dates   = generateDates(date, freq, until);
+      if (_removeFile) {
+        await dbDelete(editId);
+        receiptIds.delete(editId);
+        _removeFile = false;
+      } else if (fileInput.files.length) {
+        await saveReceiptFile(editId, fileInput.files[0]);
+      }
+
+      ensureYear(date.slice(0,4));
+      saveData(); closeModal(); render();
+      return;
+    }
+
+    // ── CREATE MODE ──
+    const recur = document.getElementById('f-recur').checked;
+    const freq  = document.getElementById('f-freq').value;
+    const until = document.getElementById('f-until').value;
+
+    if (recur) {
+      if (!until)       return alert('Indic\u00e1 la fecha hasta la cual se repite.');
+      if (until < date) return alert('La fecha "hasta" debe ser posterior a la fecha de inicio.');
+      const dates    = generateDates(date, freq, until);
       const seriesId = uid();
+      const newIds   = [];
       dates.forEach(d => {
-        transactions.push({ id: uid(), date: d, desc, cat, amount, notes, type, seriesId, freq });
-        ensureYear(d.slice(0,4));
+        const id = uid();
+        transactions.push({ id, date: d, desc, cat, amount, notes, type, invoicedBy, seriesId, freq });
+        newIds.push(id); ensureYear(d.slice(0,4));
       });
+      if (fileInput.files.length && newIds.length) {
+        await saveReceiptFile(newIds[0], fileInput.files[0]);
+      }
       document.getElementById('filter-year').value = date.slice(0,4);
     } else {
-      transactions.push({ id: uid(), date, desc, cat, amount, notes, type });
+      const id = uid();
+      transactions.push({ id, date, desc, cat, amount, notes, type, invoicedBy });
+      if (fileInput.files.length) await saveReceiptFile(id, fileInput.files[0]);
       ensureYear(date.slice(0,4));
       document.getElementById('filter-year').value = date.slice(0,4);
     }
 
-    saveData();
-    closeModal();
-    render();
+    saveData(); closeModal(); render();
   }
 
-  // ── DELETE ────────────────────────────────────────────────────────────────
+  // ── DELETE TRANSACTION ────────────────────────────────────────────────────────
   function deleteTransaction(id) {
     const tx = transactions.find(t => t.id === id);
     if (!tx) return;
@@ -854,8 +1158,9 @@
     if (tx.seriesId) {
       document.getElementById('del-overlay').classList.add('open');
     } else {
-      if (!confirm('¿Eliminar este movimiento?')) { pendingDeleteId = null; return; }
+      if (!confirm('\u00bfEliminar este movimiento?')) { pendingDeleteId = null; return; }
       transactions = transactions.filter(t => t.id !== id);
+      if (receiptIds.has(id)) { dbDelete(id); receiptIds.delete(id); }
       saveData(); render(); pendingDeleteId = null;
     }
   }
@@ -864,9 +1169,12 @@
     if (!pendingDeleteId) return;
     const tx = transactions.find(t => t.id === pendingDeleteId);
     if (mode === 'series' && tx && tx.seriesId) {
+      const sIds = transactions.filter(t=>t.seriesId===tx.seriesId).map(t=>t.id);
       transactions = transactions.filter(t => t.seriesId !== tx.seriesId);
+      sIds.forEach(id => { if(receiptIds.has(id)) { dbDelete(id); receiptIds.delete(id); } });
     } else {
       transactions = transactions.filter(t => t.id !== pendingDeleteId);
+      if (receiptIds.has(pendingDeleteId)) { dbDelete(pendingDeleteId); receiptIds.delete(pendingDeleteId); }
     }
     saveData(); render();
     pendingDeleteId = null;
@@ -878,18 +1186,16 @@
     document.getElementById('del-overlay').classList.remove('open');
   }
 
-  // ── EXPORT CSV ───────────────────────────────────────────────────────────
+  // ── EXPORT CSV ────────────────────────────────────────────────────────────────
   function exportCSV() {
     const filtered = getFiltered();
-    if (!filtered.length) return alert('No hay datos para exportar en el período seleccionado.');
-    const header = ['Fecha','Descripción','Categoría','Tipo','Monto','Notas','Recurrente','Frecuencia'];
+    if (!filtered.length) return alert('No hay datos para exportar en el per\u00edodo seleccionado.');
+    const header = ['Fecha','Descripci\u00f3n','Categor\u00eda','Facturado por','Tipo','Monto','Notas','Recurrente','Frecuencia'];
     const rows = filtered.map(t => [
-      t.date, `"${t.desc}"`, `"${t.cat||''}"`,
+      t.date, `"${t.desc}"`, `"${t.cat||''}"`, `"${t.invoicedBy||''}"`,
       t.type==='income'?'Ingreso':'Egreso',
-      t.amount.toFixed(2),
-      `"${t.notes||''}"`,
-      t.seriesId ? 'Sí' : 'No',
-      t.freq ? freqLabel[t.freq] : ''
+      t.amount.toFixed(2), `"${t.notes||''}"`,
+      t.seriesId?'S\u00ed':'No', t.freq?freqLabel[t.freq]:''
     ]);
     const csv  = [header,...rows].map(r=>r.join(',')).join('\n');
     const blob = new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});
@@ -899,12 +1205,84 @@
     a.click(); URL.revokeObjectURL(url);
   }
 
-  // ── PARTNER DISTRIBUTION ─────────────────────────────────────────────────
+  // ── EXPORT JSON (full backup with receipts) ───────────────────────────────────
+  async function exportJSON() {
+    const receipts = await dbGetAll();
+    const backup = {
+      v: 2,
+      app: 'If You Skill Finanzas',
+      exportedAt: new Date().toISOString(),
+      transactions,
+      withdrawals,
+      partnerNames,
+      receipts
+    };
+    const json = JSON.stringify(backup);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url;
+    a.download = `iys-backup-${new Date().toISOString().slice(0,10)}.json`;
+    a.click(); URL.revokeObjectURL(url);
+    alert('\u2705 Backup exportado. Guard\u00e1 ese archivo en Google Drive o Dropbox para tenerlo disponible en cualquier computadora.');
+  }
+
+  // ── IMPORT JSON (restore backup) ──────────────────────────────────────────────
+  function importJSON() {
+    const input = document.createElement('input');
+    input.type = 'file'; input.accept = '.json';
+    input.onchange = e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = async ev => {
+        try {
+          const d = JSON.parse(ev.target.result);
+          if (!d.transactions) throw new Error('El archivo no es un backup v\u00e1lido de If You Skill.');
+          const fecha = d.exportedAt
+            ? new Date(d.exportedAt).toLocaleDateString('es-AR', {day:'numeric',month:'long',year:'numeric'})
+            : 'fecha desconocida';
+          const ok = confirm(
+            `\u00bfImportar backup del ${fecha}?\n` +
+            `\u2022 ${d.transactions.length} movimientos\n` +
+            `\u2022 ${(d.receipts||[]).length} comprobantes adjuntos\n\n` +
+            `\u26a0 Esto REEMPLAZAR\u00c1 todos los datos actuales. \u00bfContinu\u00e1r?`
+          );
+          if (!ok) return;
+
+          transactions = d.transactions  || [];
+          withdrawals  = d.withdrawals   || [];
+          partnerNames = d.partnerNames  || { p1:'Meri', p2:'Agus' };
+          saveData(); saveWithdraws(); savePartners();
+
+          if (d.receipts && d.receipts.length) {
+            await dbClearAll();
+            for (const r of d.receipts) await dbPut(r);
+            receiptIds = new Set(d.receipts.map(r => r.txId));
+          } else {
+            await dbClearAll();
+            receiptIds = new Set();
+          }
+
+          // Rebuild year selector
+          document.getElementById('filter-year').innerHTML = '';
+          populateYears();
+          render();
+          alert(`\u2705 Backup importado: ${transactions.length} movimientos restaurados.`);
+        } catch(err) {
+          alert('Error al importar: ' + err.message);
+        }
+      };
+      reader.readAsText(file);
+    };
+    input.click();
+  }
+
+  // ── PARTNER DISTRIBUTION ──────────────────────────────────────────────────────
   function renderPartners() {
     const year  = document.getElementById('filter-year').value;
     const month = document.getElementById('filter-month').value;
 
-    // Net profit for the current filter period
     const periodTx = transactions.filter(t => {
       const [ty, tm] = t.date.split('-');
       if (ty !== year) return false;
@@ -913,9 +1291,8 @@
     });
     const netProfit = periodTx.filter(t=>t.type==='income').reduce((a,t)=>a+t.amount,0)
                     - periodTx.filter(t=>t.type==='expense').reduce((a,t)=>a+t.amount,0);
-    const share = Math.max(netProfit, 0) / 2;  // each partner's slice (min 0 if loss)
+    const share = Math.max(netProfit, 0) / 2;
 
-    // Withdrawals in the same period
     const periodW = withdrawals.filter(w => {
       const [wy, wm] = w.date.split('-');
       if (wy !== year) return false;
@@ -931,46 +1308,45 @@
       const totalW  = pW.reduce((a,w)=>a+w.amount,0);
       const balance = share - totalW;
 
-      document.getElementById(`p${p}-avatar`).textContent     = initials;
-      document.getElementById(`p${p}-name`).textContent       = name;
-      document.getElementById(`p${p}-share`).textContent      = fmt(share);
-      document.getElementById(`p${p}-withdrawn`).textContent  = fmt(totalW);
+      document.getElementById(`p${p}-avatar`).textContent    = initials;
+      document.getElementById(`p${p}-name`).textContent      = name;
+      document.getElementById(`p${p}-share`).textContent     = fmt(share);
+      document.getElementById(`p${p}-withdrawn`).textContent = fmt(totalW);
 
       const chip = document.getElementById(`p${p}-chip`);
       if (Math.abs(balance) < 1) {
-        chip.textContent = '✓ Al día';
+        chip.textContent = '\u2713 Al d\u00eda';
         chip.className   = 'balance-chip even';
       } else if (balance > 0) {
         chip.textContent = `Puede retirar ${fmt(balance)}`;
         chip.className   = 'balance-chip ok';
       } else {
-        chip.textContent = `Retiró de más: ${fmt(Math.abs(balance))}`;
+        chip.textContent = `Retir\u00f3 de m\u00e1s: ${fmt(Math.abs(balance))}`;
         chip.className   = 'balance-chip debt';
       }
 
-      // Withdrawal history list (most recent 5)
-      const hist = document.getElementById(`p${p}-history`);
+      const hist   = document.getElementById(`p${p}-history`);
       const recent = [...pW].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
       if (!recent.length) { hist.innerHTML = ''; return; }
-      hist.innerHTML = `<div class="wh-title">Últimos retiros</div>` +
+      hist.innerHTML = `<div class="wh-title">\u00daltimos retiros</div>` +
         recent.map(w => `
           <div class="withdraw-item">
             <span class="wi-date">${fmtDate(w.date)}</span>
-            <span>${esc(w.notes||'—')}</span>
+            <span>${esc(w.notes||'\u2014')}</span>
             <span class="wi-amt">${fmt(w.amount)}</span>
-            <button class="wi-del" onclick="deleteWithdraw('${w.id}')" title="Eliminar">✕</button>
+            <button class="wi-del" onclick="deleteWithdraw('${w.id}')" title="Eliminar">\u2715</button>
           </div>`).join('');
     });
   }
 
-  // ── WITHDRAW MODAL ───────────────────────────────────────────────────────
+  // ── WITHDRAW MODAL ────────────────────────────────────────────────────────────
   function openWithdraw(partner) {
     document.getElementById('w-partner').value = partner;
     document.getElementById('w-date').value    = new Date().toISOString().slice(0,10);
     document.getElementById('w-amount').value  = '';
     document.getElementById('w-notes').value   = '';
     const name = partnerNames[`p${partner}`] || `Socia ${partner}`;
-    document.getElementById('withdraw-title').textContent = `💸 Retiro de ${name}`;
+    document.getElementById('withdraw-title').textContent = `\uD83D\uDCB8 Retiro de ${name}`;
     document.getElementById('withdraw-overlay').classList.add('open');
     setTimeout(()=>document.getElementById('w-amount').focus(), 150);
   }
@@ -982,22 +1358,19 @@
     const date    = document.getElementById('w-date').value;
     const amount  = parseFloat(document.getElementById('w-amount').value);
     const notes   = document.getElementById('w-notes').value.trim();
-    if (!date)             return alert('Indicá una fecha.');
-    if (!amount || amount<=0) return alert('El monto debe ser mayor a 0.');
+    if (!date)            return alert('Indic\u00e1 una fecha.');
+    if (!amount||amount<=0) return alert('El monto debe ser mayor a 0.');
     withdrawals.push({ id: uid(), partner, date, amount, notes });
-    saveWithdraws();
-    closeWithdraw();
-    renderPartners();
+    saveWithdraws(); closeWithdraw(); renderPartners();
   }
 
   function deleteWithdraw(id) {
-    if (!confirm('¿Eliminar este retiro?')) return;
+    if (!confirm('\u00bfEliminar este retiro?')) return;
     withdrawals = withdrawals.filter(w => w.id !== id);
-    saveWithdraws();
-    renderPartners();
+    saveWithdraws(); renderPartners();
   }
 
-  // ── PARTNER CONFIG ────────────────────────────────────────────────────────
+  // ── PARTNER CONFIG ────────────────────────────────────────────────────────────
   function openPartnerConfig() {
     document.getElementById('cfg-p1').value = partnerNames.p1;
     document.getElementById('cfg-p2').value = partnerNames.p2;
@@ -1010,17 +1383,23 @@
   function savePartnerNames() {
     const n1 = document.getElementById('cfg-p1').value.trim();
     const n2 = document.getElementById('cfg-p2').value.trim();
-    if (!n1 || !n2) return alert('Completá ambos nombres.');
+    if (!n1 || !n2) return alert('Complet\u00e1 ambos nombres.');
     partnerNames = { p1: n1, p2: n2 };
-    savePartners();
-    closeCfg();
-    renderPartners();
+    savePartners(); closeCfg(); renderPartners();
+    updateInvoicedSelect();  // refresh options with new names
   }
 
-  // ── INIT ──────────────────────────────────────────────────────────────────
-  loadData();
-  populateYears();
-  render();
+  // ── INIT ──────────────────────────────────────────────────────────────────────
+  async function init() {
+    try { await openDB(); } catch(e) { console.warn('IndexedDB no disponible:', e); }
+    loadData();
+    await loadReceiptIds();
+    populateYears();
+    updateInvoicedSelect();
+    render();
+  }
+
+  init();
 </script>
 </body>
 </html>
