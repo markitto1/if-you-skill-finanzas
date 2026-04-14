@@ -7,9 +7,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;0,700;0,800;1,600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
       --primary:       #38D16A;
       --primary-light: #5EDE87;
@@ -24,33 +24,25 @@
       --shadow:        0 2px 12px rgba(56,209,106,.10);
       --recur:         #38D16A;
     }
-
     body { font-family: 'Poppins', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
     /* ── HEADER ── */
-    header {
-      background: var(--primary-dark); color: #fff;
-      padding: 0 32px; display: flex; align-items: center;
-      justify-content: space-between; height: 68px;
-      box-shadow: 0 2px 8px rgba(22,34,54,.35);
-    }
-    header h1 { font-size: 1.35rem; font-weight: 700; letter-spacing: .5px; }
+    header { background: var(--primary-dark); color: #fff; padding: 0 32px; display: flex; align-items: center; justify-content: space-between; height: 68px; box-shadow: 0 2px 8px rgba(22,34,54,.35); }
+    header h1 { font-size: 1.35rem; font-weight: 700; letter-spacing: .5px; display: flex; align-items: center; gap: 8px; }
     header h1 em { color: var(--primary); font-style: italic; font-weight: 800; }
-    header span { font-size: .8rem; opacity: .6; }
+    header .hdr-right { display: flex; align-items: center; gap: 10px; }
+    header span.hdr-date { font-size: .8rem; opacity: .6; }
+    .sync-badge { font-size: .72rem; font-weight: 700; padding: 3px 8px; border-radius: 20px; cursor: default; transition: background .3s; white-space: nowrap; }
+    .sync-ok      { background: rgba(56,209,106,.25); color: #38D16A; }
+    .sync-syncing { background: rgba(234,179,8,.25);  color: #ca8a04; }
+    .sync-offline { background: rgba(239,68,68,.25);  color: #EF4444; }
 
     /* ── LAYOUT ── */
     main { max-width: 1160px; margin: 0 auto; padding: 32px 20px; }
 
     /* ── SUMMARY CARDS ── */
-    .summary-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 18px; margin-bottom: 28px;
-    }
-    .card {
-      background: var(--card); border-radius: 14px; padding: 22px 24px;
-      box-shadow: var(--shadow); border: 1px solid var(--border);
-    }
+    .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; margin-bottom: 28px; }
+    .card { background: var(--card); border-radius: 14px; padding: 22px 24px; box-shadow: var(--shadow); border: 1px solid var(--border); }
     .card .label { font-size: .78rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .6px; margin-bottom: 8px; }
     .card .amount { font-size: 1.75rem; font-weight: 700; }
     .card.balance  .amount { color: var(--primary); }
@@ -62,30 +54,16 @@
     /* ── FILTER BAR ── */
     .filter-bar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
     .filter-bar label { font-size: .85rem; font-weight: 600; color: var(--muted); }
-    .filter-bar select {
-      padding: 7px 12px; border: 1px solid var(--border); border-radius: 8px;
-      background: var(--card); font-size: .9rem; color: var(--text); cursor: pointer;
-    }
+    .filter-bar select { padding: 7px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--card); font-size: .9rem; color: var(--text); cursor: pointer; }
     .filter-bar select:focus { outline: 2px solid var(--primary); }
 
     /* ── BACKUP BAR ── */
-    .backup-bar {
-      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-      background: #FFFBEB; border: 1px solid #FDE68A;
-      border-radius: 12px; padding: 10px 16px; margin-bottom: 22px;
-      font-size: .8rem; color: #92400E;
-    }
-    .backup-bar .bb-icon { font-size: 1rem; }
-    .backup-bar .bb-text strong { font-weight: 700; }
+    .backup-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; background: #FFFBEB; border: 1px solid #FDE68A; border-radius: 12px; padding: 10px 16px; margin-bottom: 22px; font-size: .8rem; color: #92400E; }
     .backup-bar .bb-actions { display: flex; gap: 8px; margin-left: auto; flex-wrap: wrap; }
 
     /* ── BUTTONS ── */
     .actions { display: flex; gap: 8px; margin-left: auto; flex-wrap: wrap; }
-    .btn {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 9px 16px; border-radius: 10px; font-size: .85rem;
-      font-weight: 600; cursor: pointer; border: none; transition: opacity .15s, transform .1s;
-    }
+    .btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 16px; border-radius: 10px; font-size: .85rem; font-weight: 600; cursor: pointer; border: none; transition: opacity .15s, transform .1s; font-family: inherit; }
     .btn:hover { opacity: .88; transform: translateY(-1px); }
     .btn:active { transform: translateY(0); }
     .btn-income  { background: var(--income);  color: #fff; }
@@ -95,30 +73,16 @@
     .btn-restore { background: var(--card); color: var(--muted); border: 1.5px solid var(--border); font-size: .78rem; padding: 7px 12px; }
 
     /* ── TABLE ── */
-    .table-card {
-      background: var(--card); border-radius: 14px;
-      box-shadow: var(--shadow); border: 1px solid var(--border); overflow: hidden;
-    }
-    .table-card .table-header {
-      padding: 18px 24px; border-bottom: 1px solid var(--border);
-      font-weight: 700; font-size: 1rem;
-      display: flex; align-items: center; justify-content: space-between;
-    }
+    .table-card { background: var(--card); border-radius: 14px; box-shadow: var(--shadow); border: 1px solid var(--border); overflow: hidden; }
+    .table-card .table-header { padding: 18px 24px; border-bottom: 1px solid var(--border); font-weight: 700; font-size: 1rem; display: flex; align-items: center; justify-content: space-between; }
     .table-card .table-header span { font-size: .8rem; color: var(--muted); font-weight: 400; }
     table { width: 100%; border-collapse: collapse; }
-    thead th {
-      background: #F0F4F8; padding: 11px 16px; text-align: left;
-      font-size: .75rem; text-transform: uppercase; letter-spacing: .5px;
-      color: var(--muted); font-weight: 700; border-bottom: 1px solid var(--border);
-    }
+    thead th { background: #F0F4F8; padding: 11px 16px; text-align: left; font-size: .75rem; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); font-weight: 700; border-bottom: 1px solid var(--border); }
     tbody tr { border-bottom: 1px solid #F1F5F9; transition: background .12s; }
     tbody tr:last-child { border-bottom: none; }
     tbody tr:hover { background: #F0F9F4; }
     tbody td { padding: 12px 16px; font-size: .88rem; }
-    .badge {
-      display: inline-block; padding: 3px 10px; border-radius: 20px;
-      font-size: .75rem; font-weight: 600;
-    }
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: .75rem; font-weight: 600; }
     .badge-income  { background: #DCFCE7; color: #16A34A; }
     .badge-expense { background: #FEE2E2; color: #DC2626; }
     .badge-recur   { background: #D1FAE5; color: #059669; font-size: .7rem; padding: 2px 7px; margin-left: 5px; }
@@ -126,39 +90,20 @@
     .amount-expense { color: var(--expense); font-weight: 700; }
     .empty-state { padding: 48px; text-align: center; color: var(--muted); font-size: .95rem; }
     .empty-state .icon { font-size: 2.5rem; margin-bottom: 10px; }
-
-    /* ── TABLE ACTION BUTTONS ── */
-    .btn-del {
-      background: none; border: none; cursor: pointer; color: #CBD5E1;
-      font-size: .95rem; padding: 4px 5px; border-radius: 6px; transition: color .15s;
-    }
+    .btn-del { background: none; border: none; cursor: pointer; color: #CBD5E1; font-size: .95rem; padding: 4px 5px; border-radius: 6px; transition: color .15s; }
     .btn-del:hover { color: var(--expense); }
-    .btn-act {
-      background: none; border: none; cursor: pointer; color: #CBD5E1;
-      font-size: .95rem; padding: 4px 5px; border-radius: 6px; transition: color .15s;
-    }
+    .btn-act { background: none; border: none; cursor: pointer; color: #CBD5E1; font-size: .95rem; padding: 4px 5px; border-radius: 6px; transition: color .15s; }
     .btn-act:hover { color: var(--primary); }
     .btn-act.att:hover { color: #6366F1; }
-
-    /* ── INVOICED BADGE ── */
-    .inv-badge {
-      display: inline-block; padding: 2px 8px; border-radius: 6px;
-      font-size: .75rem; font-weight: 700;
-    }
+    .inv-badge { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: .75rem; font-weight: 700; }
     .inv-p1 { background: #D1FAE5; color: #059669; }
     .inv-p2 { background: #162236; color: #38D16A; }
     .inv-none { color: var(--muted); font-size: .8rem; }
 
     /* ── MONTHLY ── */
     .monthly-section { margin-top: 28px; }
-    .monthly-grid {
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-      gap: 12px; padding: 20px 24px;
-    }
-    .month-pill {
-      background: #F8FAFC; border: 1px solid var(--border);
-      border-radius: 10px; padding: 14px 16px;
-    }
+    .monthly-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; padding: 20px 24px; }
+    .month-pill { background: #F8FAFC; border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
     .month-pill .m-name { font-size: .78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
     .month-pill .m-income  { font-size: .82rem; color: var(--income);  font-weight: 600; }
     .month-pill .m-expense { font-size: .82rem; color: var(--expense); font-weight: 600; }
@@ -167,128 +112,63 @@
     .neg { color: var(--expense); }
 
     /* ── MODAL ── */
-    .overlay {
-      position: fixed; inset: 0; background: rgba(22,34,54,.55);
-      display: flex; align-items: center; justify-content: center;
-      z-index: 100; opacity: 0; pointer-events: none; transition: opacity .2s;
-      padding: 16px;
-    }
+    .overlay { position: fixed; inset: 0; background: rgba(22,34,54,.55); display: flex; align-items: center; justify-content: center; z-index: 100; opacity: 0; pointer-events: none; transition: opacity .2s; padding: 16px; }
     .overlay.open { opacity: 1; pointer-events: all; }
-    .modal {
-      background: var(--card); border-radius: 18px; padding: 28px 32px;
-      width: 100%; max-width: 480px; box-shadow: 0 8px 40px rgba(22,34,54,.25);
-      transform: translateY(20px); transition: transform .2s;
-      max-height: 92vh; overflow-y: auto;
-    }
+    .modal { background: var(--card); border-radius: 18px; padding: 28px 32px; width: 100%; max-width: 480px; box-shadow: 0 8px 40px rgba(22,34,54,.25); transform: translateY(20px); transition: transform .2s; max-height: 92vh; overflow-y: auto; }
     .overlay.open .modal { transform: translateY(0); }
     .modal h2 { margin-bottom: 20px; font-size: 1.15rem; }
     .form-group { margin-bottom: 14px; }
     .form-group label { display: block; font-size: .82rem; font-weight: 600; color: var(--muted); margin-bottom: 6px; }
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-      width: 100%; padding: 10px 14px; border: 1.5px solid var(--border);
-      border-radius: 9px; font-size: .95rem; color: var(--text);
-      transition: border-color .15s; background: #FAFAFA; font-family: inherit;
-    }
-    .form-group input:focus,
-    .form-group select:focus,
-    .form-group textarea:focus { outline: none; border-color: var(--primary); background: #fff; }
+    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 9px; font-size: .95rem; color: var(--text); transition: border-color .15s; background: #FAFAFA; font-family: inherit; }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--primary); background: #fff; }
     .form-group textarea { resize: vertical; min-height: 60px; }
     .modal-actions { display: flex; gap: 10px; margin-top: 10px; }
     .btn-cancel { background: #F1F5F9; color: var(--text); flex: 1; justify-content: center; }
     .btn-submit { flex: 2; justify-content: center; }
 
     /* ── FILE UPLOAD ── */
-    .file-drop {
-      border: 1.5px dashed var(--border); border-radius: 9px;
-      padding: 10px 14px; cursor: pointer;
-      transition: border-color .15s, background .15s;
-      background: #FAFAFA; font-size: .88rem; color: var(--muted);
-      display: flex; align-items: center; gap: 8px; user-select: none;
-    }
+    .file-drop { border: 1.5px dashed var(--border); border-radius: 9px; padding: 10px 14px; cursor: pointer; transition: border-color .15s, background .15s; background: #FAFAFA; font-size: .88rem; color: var(--muted); display: flex; align-items: center; gap: 8px; user-select: none; }
     .file-drop:hover { border-color: var(--primary); color: var(--primary-dark); }
     .file-drop.has-file { border-color: var(--primary); background: #F0FFF6; color: #059669; font-weight: 600; }
-    .existing-file {
-      display: flex; align-items: center; gap: 8px;
-      margin-top: 7px; padding: 7px 10px;
-      background: #EEF2FF; border-radius: 8px;
-      font-size: .82rem; color: #4F46E5; font-weight: 600;
-    }
+    .existing-file { display: flex; align-items: center; gap: 8px; margin-top: 7px; padding: 7px 10px; background: #EEF2FF; border-radius: 8px; font-size: .82rem; color: #4F46E5; font-weight: 600; }
     .existing-file span { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .existing-file .ef-view { background: none; border: none; cursor: pointer; color: #4F46E5; font-size: .78rem; font-weight: 700; text-decoration: underline; padding: 0; }
     .existing-file .ef-del  { background: none; border: none; cursor: pointer; color: var(--expense); font-size: .9rem; padding: 0 2px; margin-left: 2px; }
 
     /* ── SERIES NOTE ── */
-    .series-note {
-      background: #FFF7ED; border: 1px solid #FDE68A;
-      border-radius: 8px; padding: 9px 12px;
-      font-size: .8rem; color: #92400E; margin-bottom: 14px;
-    }
+    .series-note { background: #FFF7ED; border: 1px solid #FDE68A; border-radius: 8px; padding: 9px 12px; font-size: .8rem; color: #92400E; margin-bottom: 14px; }
 
-    /* ── RECURRING TOGGLE ── */
-    .recur-row {
-      display: flex; align-items: center; justify-content: space-between;
-      background: #F8FAFC; border: 1.5px solid var(--border);
-      border-radius: 10px; padding: 12px 14px; margin-bottom: 14px;
-      cursor: pointer; user-select: none;
-    }
+    /* ── RECURRING ── */
+    .recur-row { display: flex; align-items: center; justify-content: space-between; background: #F8FAFC; border: 1.5px solid var(--border); border-radius: 10px; padding: 12px 14px; margin-bottom: 14px; cursor: pointer; user-select: none; }
     .recur-row:hover { border-color: var(--recur); }
     .recur-row.active { border-color: var(--recur); background: #ECFDF5; }
     .recur-row .recur-label { font-size: .9rem; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 8px; }
     .recur-row .recur-label span { font-size: .78rem; font-weight: 400; color: var(--muted); }
-
     .toggle { position: relative; width: 40px; height: 22px; flex-shrink: 0; }
     .toggle input { opacity: 0; width: 0; height: 0; }
     .slider { position: absolute; inset: 0; background: #CBD5E1; border-radius: 22px; transition: .25s; }
-    .slider:before {
-      content: ''; position: absolute;
-      height: 16px; width: 16px; left: 3px; bottom: 3px;
-      background: white; border-radius: 50%; transition: .25s;
-      box-shadow: 0 1px 3px rgba(0,0,0,.2);
-    }
+    .slider:before { content: ''; position: absolute; height: 16px; width: 16px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: .25s; box-shadow: 0 1px 3px rgba(0,0,0,.2); }
     input:checked + .slider { background: var(--recur); }
     input:checked + .slider:before { transform: translateX(18px); }
-
-    .recur-panel {
-      background: #ECFDF5; border: 1.5px solid #6EE7B7;
-      border-radius: 10px; padding: 14px; margin-bottom: 14px; display: none;
-    }
+    .recur-panel { background: #ECFDF5; border: 1.5px solid #6EE7B7; border-radius: 10px; padding: 14px; margin-bottom: 14px; display: none; }
     .recur-panel.visible { display: block; }
     .recur-panel .rp-title { font-size: .78rem; font-weight: 700; color: var(--recur); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
     .recur-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .recur-panel .form-group { margin-bottom: 0; }
-    .recur-preview {
-      margin-top: 10px; font-size: .78rem; color: #059669;
-      background: #D1FAE5; border-radius: 7px; padding: 7px 10px; font-weight: 600;
-    }
+    .recur-preview { margin-top: 10px; font-size: .78rem; color: #059669; background: #D1FAE5; border-radius: 7px; padding: 7px 10px; font-weight: 600; }
 
     /* ── PARTNER SECTION ── */
     .partner-section { margin-bottom: 28px; }
-    .partner-section-header {
-      display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;
-    }
+    .partner-section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
     .partner-section-header h2 { font-size: 1rem; font-weight: 700; }
-    .partner-section-header button {
-      background: none; border: none; font-size: .8rem; color: var(--muted);
-      cursor: pointer; padding: 4px 8px; border-radius: 6px; font-weight: 600; transition: background .15s;
-    }
+    .partner-section-header button { background: none; border: none; font-size: .8rem; color: var(--muted); cursor: pointer; padding: 4px 8px; border-radius: 6px; font-weight: 600; transition: background .15s; }
     .partner-section-header button:hover { background: var(--border); color: var(--text); }
-
     .partner-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
     @media (max-width: 600px) { .partner-grid { grid-template-columns: 1fr; } }
-
-    .partner-card {
-      background: var(--card); border-radius: 14px; padding: 22px 24px;
-      box-shadow: var(--shadow); border: 2px solid var(--border); position: relative;
-    }
+    .partner-card { background: var(--card); border-radius: 14px; padding: 22px 24px; box-shadow: var(--shadow); border: 2px solid var(--border); position: relative; }
     .partner-card.p1 { border-color: #38D16A; }
     .partner-card.p2 { border-color: #162236; }
-    .partner-avatar {
-      width: 40px; height: 40px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.1rem; font-weight: 700; margin-bottom: 10px;
-    }
+    .partner-avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; font-weight: 700; margin-bottom: 10px; }
     .p1 .partner-avatar { background: #D1FAE5; color: #059669; }
     .p2 .partner-avatar { background: #162236; color: #38D16A; }
     .partner-name { font-size: 1.05rem; font-weight: 700; margin-bottom: 14px; }
@@ -300,10 +180,7 @@
     .balance-chip.ok   { background: #DCFCE7; color: #16A34A; }
     .balance-chip.debt { background: #FEE2E2; color: #DC2626; }
     .balance-chip.even { background: #ECFDF5; color: var(--primary); }
-    .btn-withdraw {
-      margin-top: 14px; width: 100%; padding: 9px; border-radius: 9px; border: none;
-      font-size: .85rem; font-weight: 700; cursor: pointer; transition: opacity .15s;
-    }
+    .btn-withdraw { margin-top: 14px; width: 100%; padding: 9px; border-radius: 9px; border: none; font-size: .85rem; font-weight: 700; cursor: pointer; transition: opacity .15s; font-family: inherit; }
     .p1 .btn-withdraw { background: #D1FAE5; color: #059669; }
     .p2 .btn-withdraw { background: #162236; color: #38D16A; }
     .btn-withdraw:hover { opacity: .8; }
@@ -316,7 +193,6 @@
     .p1 .withdraw-item .wi-amt { color: #059669; }
     .wi-del { background: none; border: none; cursor: pointer; color: #CBD5E1; font-size: .85rem; padding: 2px 4px; border-radius: 4px; }
     .wi-del:hover { color: var(--expense); }
-
     .cfg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
     @media (max-width: 600px) {
@@ -335,33 +211,19 @@
 <body>
 
 <header>
-  <h1>if U <em>skill</em> — Finanzas</h1>
-  <span id="header-date"></span>
+  <h1>if U <em>skill</em> — Finanzas <span id="sync-badge" class="sync-badge sync-syncing">⟳ Conectando...</span></h1>
+  <div class="hdr-right">
+    <span class="hdr-date" id="header-date"></span>
+  </div>
 </header>
 
 <main>
   <!-- SUMMARY CARDS -->
   <div class="summary-grid">
-    <div class="card balance">
-      <div class="label">Balance Total (año)</div>
-      <div class="amount" id="s-balance">$0</div>
-      <div class="sub" id="s-year"></div>
-    </div>
-    <div class="card income-c">
-      <div class="label">Ingresos acumulados</div>
-      <div class="amount" id="s-income">$0</div>
-      <div class="sub">En el período seleccionado</div>
-    </div>
-    <div class="card expense-c">
-      <div class="label">Egresos acumulados</div>
-      <div class="amount" id="s-expense">$0</div>
-      <div class="sub">En el período seleccionado</div>
-    </div>
-    <div class="card month-c">
-      <div class="label">Resultado del mes actual</div>
-      <div class="amount" id="s-month">$0</div>
-      <div class="sub" id="s-month-label"></div>
-    </div>
+    <div class="card balance"><div class="label">Balance Total (año)</div><div class="amount" id="s-balance">$0</div><div class="sub" id="s-year"></div></div>
+    <div class="card income-c"><div class="label">Ingresos acumulados</div><div class="amount" id="s-income">$0</div><div class="sub">En el período seleccionado</div></div>
+    <div class="card expense-c"><div class="label">Egresos acumulados</div><div class="amount" id="s-expense">$0</div><div class="sub">En el período seleccionado</div></div>
+    <div class="card month-c"><div class="label">Resultado del mes actual</div><div class="amount" id="s-month">$0</div><div class="sub" id="s-month-label"></div></div>
   </div>
 
   <!-- FILTERS + ACTIONS -->
@@ -393,30 +255,23 @@
 
   <!-- BACKUP BAR -->
   <div class="backup-bar">
-    <span class="bb-icon">💾</span>
-    <span class="bb-text"><strong>Datos guardados en este navegador.</strong> Para usar en otra compu o no perder nada, exportá un backup JSON.</span>
+    <span>💾</span>
+    <span><strong>Los datos se sincronizan automáticamente en la nube.</strong> Podés exportar un backup de seguridad cuando quieras.</span>
     <div class="bb-actions">
-      <button class="btn btn-backup" onclick="exportJSON()">⬇ Exportar backup</button>
+      <button class="btn btn-backup" onclick="exportJSON()">⬇ Backup JSON</button>
       <button class="btn btn-restore" onclick="importJSON()">⬆ Importar backup</button>
     </div>
   </div>
 
   <!-- TABLE -->
   <div class="table-card">
-    <div class="table-header">
-      Movimientos
-      <span id="count-label"></span>
-    </div>
+    <div class="table-header">Movimientos<span id="count-label"></span></div>
     <table>
       <thead>
         <tr>
-          <th>Fecha</th>
-          <th>Descripción</th>
-          <th>Categoría</th>
-          <th class="col-inv">Factura</th>
-          <th>Tipo</th>
-          <th style="text-align:right">Monto</th>
-          <th style="text-align:right"></th>
+          <th>Fecha</th><th>Descripción</th><th>Categoría</th>
+          <th class="col-inv">Factura</th><th>Tipo</th>
+          <th style="text-align:right">Monto</th><th style="text-align:right"></th>
         </tr>
       </thead>
       <tbody id="tx-body"></tbody>
@@ -453,7 +308,7 @@
       </div>
       <div class="partner-card p2">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-        <div class="partner-avatar" id="p2-avatar" style="width:32px;height:32px;font-size:.85rem;margin:0">A</div>
+          <div class="partner-avatar" id="p2-avatar" style="width:32px;height:32px;font-size:.85rem;margin:0">A</div>
           <div class="partner-name" id="p2-name" style="font-size:.9rem;margin:0">Agus</div>
         </div>
         <div class="partner-row"><span class="pr-label">Le corresponde (50%)</span><span class="pr-val" id="p2-share" style="font-size:.82rem">$0</span></div>
@@ -468,104 +323,60 @@
 
 <!-- ═══════════ MODALS ═══════════ -->
 
-<!-- MAIN TRANSACTION MODAL +
+<!-- MAIN MODAL -->
 <div class="overlay" id="modal-overlay" onclick="closeOnOverlay(event)">
   <div class="modal">
     <h2 id="modal-title">Agregar movimiento</h2>
-
-    <!-- Series note (edit mode only) -->
-    <div class="series-note" id="edit-series-note" style="display:none">
-      🔁 Este movimiento es parte de una serie recurrente. Solo se editará esta instancia.
-    </div>
-
-    <div class="form-group">
-      <label>Fecha *</label>
-      <input type="date" id="f-date" onchange="updateRecurPreview()" />
-    </div>
-    <div class="form-group">
-      <label>Descripción *</label>
-      <input type="text" id="f-desc" placeholder="Ej: Pago proyecto selección" />
-    </div>
+    <div class="series-note" id="edit-series-note" style="display:none">🔁 Este movimiento es parte de una serie recurrente. Solo se editará esta instancia.</div>
+    <div class="form-group"><label>Fecha *</label><input type="date" id="f-date" onchange="updateRecurPreview()" /></div>
+    <div class="form-group"><label>Descripción *</label><input type="text" id="f-desc" placeholder="Ej: Pago proyecto selección" /></div>
     <div class="form-group">
       <label>Categoría</label>
       <select id="f-cat">
         <option value="">— Seleccionar —</option>
-        <option>Reclutamiento freelance</option>
-        <option>Búsqueda</option>
-        <option>Diseño</option>
-        <option>Outplacement</option>
-        <option>Capacitación</option>
-        <option>Consultoría</option>
+        <option>Reclutamiento freelance</option><option>Búsqueda</option>
+        <option>Diseño</option><option>Outplacement</option>
+        <option>Capacitación</option><option>Consultoría</option>
         <option>Gastos generales</option>
       </select>
     </div>
-    <div class="form-group">
-      <label>¿Quién facturó?</label>
-      <select id="f-invoiced">
-        <option value="">— Sin especificar —</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label>Monto (ARS) *</label>
-      <input type="number" id="f-amount" placeholder="0.00" min="0" step="0.01" />
-    </div>
-    <div class="form-group">
-      <label>Notas (opcional)</label>
-      <textarea id="f-notes" placeholder="Observaciones adicionales..."></textarea>
-    </div>
-
-    <!-- COMPROBANTE UPLOAD -->
+    <div class="form-group"><label>¿Quién facturó?</label><select id="f-invoiced"><option value="">— Sin especificar —</option></select></div>
+    <div class="form-group"><label>Monto (ARS) *</label><input type="number" id="f-amount" placeholder="0.00" min="0" step="0.01" /></div>
+    <div class="form-group"><label>Notas (opcional)</label><textarea id="f-notes" placeholder="Observaciones adicionales..."></textarea></div>
     <div class="form-group">
       <label>Comprobante de pago (opcional)</label>
       <div class="file-drop" id="file-drop" onclick="document.getElementById('f-receipt').click()">
-        <span>📎</span>
-        <span id="f-receipt-label">Adjuntar imagen o PDF...</span>
+        <span>📎</span><span id="f-receipt-label">Adjuntar imagen o PDF...</span>
         <input type="file" id="f-receipt" accept="image/*,.pdf" onchange="onFileSelect()" style="display:none" />
       </div>
-      <!-- Shown in edit mode when receipt already exists -->
       <div class="existing-file" id="existing-file" style="display:none">
-        <span>📎</span>
-        <span id="existing-file-name">archivo.pdf</span>
+        <span>📎</span><span id="existing-file-name">archivo.pdf</span>
         <button class="ef-view" onclick="viewReceiptFromEdit(event)">Ver</button>
         <button class="ef-del" onclick="removeExistingFile(event)" title="Eliminar comprobante">✕</button>
       </div>
     </div>
-
-    <!-- RECURRING TOGGLE -->
     <div class="recur-row" id="recur-row" onclick="toggleRecur()">
-      <div class="recur-label">
-        🔁 Movimiento recurrente
-        <span>Se repite automáticamente</span>
-      </div>
+      <div class="recur-label">🔁 Movimiento recurrente<span>Se repite automáticamente</span></div>
       <label class="toggle" onclick="event.stopPropagation()">
-        <input type="checkbox" id="f-recur" onchange="toggleRecur()" />
-        <span class="slider"></span>
+        <input type="checkbox" id="f-recur" onchange="toggleRecur()" /><span class="slider"></span>
       </label>
     </div>
-
-    <!-- RECURRING OPTIONS PANEL -->
     <div class="recur-panel" id="recur-panel">
       <div class="rp-title">⚙ Configurar recurrencia</div>
       <div class="recur-grid">
-        <div class="form-group">
-          <label>Frecuencia</label>
+        <div class="form-group"><label>Frecuencia</label>
           <select id="f-freq" onchange="updateRecurPreview()">
             <option value="weekly">Semanal (cada 7 días)</option>
             <option value="monthly" selected>Mensual (mismo día)</option>
             <option value="annual">Anual (mismo mes/día)</option>
           </select>
         </div>
-        <div class="form-group">
-          <label>Repetir hasta</label>
-          <input type="date" id="f-until" onchange="updateRecurPreview()" />
-        </div>
+        <div class="form-group"><label>Repetir hasta</label><input type="date" id="f-until" onchange="updateRecurPreview()" /></div>
       </div>
       <div class="recur-preview" id="recur-preview"></div>
     </div>
-
     <input type="hidden" id="f-type" />
     <input type="hidden" id="f-edit-id" />
-
     <div class="modal-actions">
       <button class="btn btn-cancel" onclick="closeModal()">Cancelar</button>
       <button class="btn btn-submit btn-income" id="btn-submit" onclick="saveTransaction()">Guardar</button>
@@ -577,22 +388,13 @@
 <div class="overlay" id="withdraw-overlay" onclick="closeWithdrawOnOverlay(event)">
   <div class="modal" style="max-width:400px">
     <h2 id="withdraw-title">Registrar retiro</h2>
-    <div class="form-group">
-      <label>Fecha *</label>
-      <input type="date" id="w-date" />
-    </div>
-    <div class="form-group">
-      <label>Monto retirado (ARS) *</label>
-      <input type="number" id="w-amount" placeholder="0.00" min="0" step="0.01" />
-    </div>
-    <div class="form-group">
-      <label>Notas (opcional)</label>
-      <input type="text" id="w-notes" placeholder="Ej: Pago de honorarios marzo" />
-    </div>
+    <div class="form-group"><label>Fecha *</label><input type="date" id="w-date" /></div>
+    <div class="form-group"><label>Monto retirado (ARS) *</label><input type="number" id="w-amount" placeholder="0.00" min="0" step="0.01" /></div>
+    <div class="form-group"><label>Notas (opcional)</label><input type="text" id="w-notes" placeholder="Ej: Pago de honorarios marzo" /></div>
     <input type="hidden" id="w-partner" />
     <div class="modal-actions">
       <button class="btn btn-cancel" onclick="closeWithdraw()">Cancelar</button>
-      <button class="btn btn-submit" id="w-submit" onclick="saveWithdraw()" style="background:var(--primary);color:#fff;flex:2;justify-content:center">Guardar retiro</button>
+      <button class="btn btn-submit" onclick="saveWithdraw()" style="background:var(--primary);color:#fff;flex:2;justify-content:center">Guardar retiro</button>
     </div>
   </div>
 </div>
@@ -602,14 +404,8 @@
   <div class="modal" style="max-width:380px">
     <h2>✏ Nombres de socias</h2>
     <div class="cfg-grid" style="margin-bottom:20px">
-      <div class="form-group" style="margin:0">
-        <label>Socia 1</label>
-        <input type="text" id="cfg-p1" placeholder="Nombre" maxlength="20" />
-      </div>
-      <div class="form-group" style="margin:0">
-        <label>Socia 2</label>
-        <input type="text" id="cfg-p2" placeholder="Nombre" maxlength="20" />
-      </div>
+      <div class="form-group" style="margin:0"><label>Socia 1</label><input type="text" id="cfg-p1" placeholder="Nombre" maxlength="20" /></div>
+      <div class="form-group" style="margin:0"><label>Socia 2</label><input type="text" id="cfg-p2" placeholder="Nombre" maxlength="20" /></div>
     </div>
     <div class="modal-actions">
       <button class="btn btn-cancel" onclick="closeCfg()">Cancelar</button>
@@ -620,7 +416,7 @@
 
 <!-- DELETE SERIES MODAL -->
 <div class="overlay" id="del-overlay">
-  <div class="modal" style="max-width:380px; text-align:center">
+  <div class="modal" style="max-width:380px;text-align:center">
     <div style="font-size:2rem;margin-bottom:12px">🔁</div>
     <h2 style="margin-bottom:10px">¿Qué querés eliminar?</h2>
     <p style="font-size:.9rem;color:var(--muted);margin-bottom:22px">Este movimiento es parte de una serie recurrente.</p>
@@ -633,7 +429,12 @@
 </div>
 
 <script>
-  // ── STORAGE KEYS ─────────────────────────────────────────────────────────────
+  // ── SUPABASE CONFIG ───────────────────────────────────────────────────────────
+  const SUPA_URL = 'https://cdeudwrjqulcgrzsdyay.supabase.co';
+  const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNkZXUkY3RldWR3cmpxdWxjZ3J6c2RyYWkiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTc3NjEyMzY5NSwiZXhwIjoyMDkxNjkZNTY5NX0.wR5CBAKySSDqvUBj5bUGMRldYuajRcvqgvVA2JNR1oM';
+  const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
+
+  // ── STORAGE KEYS ───────────────────────────────────────────────────────────────
   const STORAGE_KEY  = 'iys_transactions_v1';
   const WITHDRAW_KEY = 'iys_withdrawals_v1';
   const PARTNERS_KEY = 'iys_partners_v1';
@@ -643,14 +444,23 @@
   let withdrawals     = [];
   let partnerNames    = { p1: 'Meri', p2: 'Agus' };
   let pendingDeleteId = null;
-  let receiptIds      = new Set();   // txIds that have an attached file
-  let _editReceiptId  = null;        // txId being edited (for file ops)
-  let _removeFile     = false;       // user asked to remove existing file
+  let receiptIds      = new Set();
+  let _editReceiptId  = null;
+  let _removeFile     = false;
+  let _remoteUpdate   = false; // flag to skip re-render while modal is open
 
-  // ── INDEXEDDB ────────────────────────────────────────────────────────────────
+  // ── SYNC BADGE ────────────────────────────────────────────────────────────────
+  function setSyncBadge(state) {
+    const el = document.getElementById('sync-badge');
+    if (!el) return;
+    if (state === 'ok')       { el.textContent = '✓ Sincronizado';    el.className = 'sync-badge sync-ok'; }
+    else if (state === 'sync'){ el.textContent = '⟳ Sincronizando...'; el.className = 'sync-badge sync-syncing'; }
+    else                      { el.textContent = '⚠ Sin conexión';    el.className = 'sync-badge sync-offline'; }
+  }
+
+  // ── INDEXEDDB (local file cache for receipts) ─────────────────────────────────
   const DB_NAME = 'iys_files_v1';
   let db = null;
-
   function openDB() {
     return new Promise((res, rej) => {
       const r = indexedDB.open(DB_NAME, 1);
@@ -659,67 +469,144 @@
       r.onerror    = e => rej(e.target.error);
     });
   }
-
   function dbPut(rec) {
     if (!db) return Promise.resolve();
     return new Promise((res, rej) => {
       const tx = db.transaction('receipts', 'readwrite');
       tx.objectStore('receipts').put(rec);
-      tx.oncomplete = () => res();
-      tx.onerror    = e => rej(e.target.error);
+      tx.oncomplete = () => res(); tx.onerror = e => rej(e.target.error);
     });
   }
-
   function dbGet(txId) {
     if (!db) return Promise.resolve(null);
     return new Promise(res => {
       const tx = db.transaction('receipts', 'readonly');
       const r = tx.objectStore('receipts').get(txId);
-      r.onsuccess = e => res(e.target.result || null);
-      r.onerror   = () => res(null);
+      r.onsuccess = e => res(e.target.result || null); r.onerror = () => res(null);
     });
   }
-
-  function dbDelete(txId) {
+  function dbDel(txId) {
     if (!db) return Promise.resolve();
     return new Promise(res => {
       const tx = db.transaction('receipts', 'readwrite');
       tx.objectStore('receipts').delete(txId);
-      tx.oncomplete = () => res();
-      tx.onerror    = () => res();
+      tx.oncomplete = () => res(); tx.onerror = () => res();
     });
   }
-
   function dbGetAll() {
     if (!db) return Promise.resolve([]);
     return new Promise(res => {
       const tx = db.transaction('receipts', 'readonly');
       const r = tx.objectStore('receipts').getAll();
-      r.onsuccess = e => res(e.target.result || []);
-      r.onerror   = () => res([]);
+      r.onsuccess = e => res(e.target.result || []); r.onerror = () => res([]);
     });
   }
-
   function dbClearAll() {
     if (!db) return Promise.resolve();
     return new Promise(res => {
       const tx = db.transaction('receipts', 'readwrite');
       tx.objectStore('receipts').clear();
-      tx.oncomplete = () => res();
-      tx.onerror    = () => res();
+      tx.oncomplete = () => res(); tx.onerror = () => res();
     });
   }
 
-  async function loadReceiptIds() {
-    const all = await dbGetAll();
-    receiptIds = new Set(all.map(r => r.txId));
+  // ── SUPABASE ROW MAPPERS ──────────────────────────────────────────────────────
+  function txToRow(t) {
+    return {
+      id: t.id, date: t.date, description: t.desc, cat: t.cat||'',
+      amount: t.amount, notes: t.notes||'', type: t.type,
+      invoiced_by: t.invoicedBy||'', series_id: t.seriesId||null, freq: t.freq||null
+    };
+  }
+  function rowToTx(r) {
+    const t = { id: r.id, date: r.date, desc: r.description, cat: r.cat||'',
+      amount: parseFloat(r.amount), notes: r.notes||'', type: r.type, invoicedBy: r.invoiced_by||'' };
+    if (r.series_id) { t.seriesId = r.series_id; t.freq = r.freq; }
+    return t;
   }
 
+  // ── SUPABASE LOAD ─────────────────────────────────────────────────────────────
+  async function loadFromSupabase() {
+    setSyncBadge('sync');
+    try {
+      const [txRes, wRes, pRes, recRes] = await Promise.all([
+        sb.from('transactions').select('*'),
+        sb.from('withdrawals').select('*'),
+        sb.from('partner_names').select('*').eq('id', 1).maybeSingle(),
+        sb.from('receipts').select('tx_id')
+      ]);
+      if (txRes.error) throw txRes.error;
+      transactions = (txRes.data||[]).map(rowToTx);
+      withdrawals  = (wRes.data||[]).map(r => ({
+        id: r.id, partner: r.partner, date: r.date, amount: parseFloat(r.amount), notes: r.notes||''
+      }));
+      if (pRes.data) partnerNames = { p1: pRes.data.p1, p2: pRes.data.p2 };
+      receiptIds   = new Set((recRes.data||[]).map(r => r.tx_id));
+      // Cache locally
+      localStorage.setItem(STORAGE_KEY,  JSON.stringify(transactions));
+      localStorage.setItem(WITHDRAW_KEY, JSON.stringify(withdrawals));
+      localStorage.setItem(PARTNERS_KEY, JSON.stringify(partnerNames));
+      setSyncBadge('ok');
+      return true;
+    } catch(err) {
+      console.warn('Supabase load error:', err.message);
+      setSyncBadge('offline');
+      return false;
+    }
+  }
+
+  // ── SUPABASE WRITE HELPERS ────────────────────────────────────────────────────
+  async function sbUpsertTx(list) {
+    if (!list.length) return;
+    const { error } = await sb.from('transactions').upsert(list.map(txToRow), { onConflict: 'id' });
+    if (error) console.warn('sbUpsertTx:', error.message);
+    else setSyncBadge('ok');
+  }
+  async function sbDeleteTx(id) {
+    const { error } = await sb.from('transactions').delete().eq('id', id);
+    if (error) console.warn('sbDeleteTx:', error.message);
+    else setSyncBadge('ok');
+  }
+  async function sbDeleteSeries(seriesId) {
+    const { error } = await sb.from('transactions').delete().eq('series_id', seriesId);
+    if (error) console.warn('sbDeleteSeries:', error.message);
+    else setSyncBadge('ok');
+  }
+  async function sbUpsertWithdrawal(w) {
+    const { error } = await sb.from('withdrawals').upsert({
+      id: w.id, partner: w.partner, date: w.date, amount: w.amount, notes: w.notes||''
+    }, { onConflict: 'id' });
+    if (error) console.warn('sbUpsertWithdrawal:', error.message);
+    else setSyncBadge('ok');
+  }
+  async function sbDeleteWithdrawal(id) {
+    const { error } = await sb.from('withdrawals').delete().eq('id', id);
+    if (error) console.warn('sbDeleteWithdrawal:', error.message);
+    else setSyncBadge('ok');
+  }
+  async function sbSavePartners() {
+    const { error } = await sb.from('partner_names').upsert(
+      { id: 1, p1: partnerNames.p1, p2: partnerNames.p2, updated_at: new Date().toISOString() },
+      { onConflict: 'id' }
+    );
+    if (error) console.warn('sbSavePartners:', error.message);
+    else setSyncBadge('ok');
+  }
+
+  // ── SUPABASE RECEIPTS ─────────────────────────────────────────────────────────
   async function saveReceiptFile(txId, file) {
     return new Promise((res, rej) => {
       const reader = new FileReader();
       reader.onload = async e => {
-        await dbPut({ txId, name: file.name, mimeType: file.type, data: e.target.result });
+        const dataUrl = e.target.result;
+        // Save to IndexedDB (local cache)
+        await dbPut({ txId, name: file.name, mimeType: file.type, data: dataUrl });
+        // Sync to Supabase
+        const { error } = await sb.from('receipts').upsert(
+          { tx_id: txId, name: file.name, mime_type: file.type, data: dataUrl },
+          { onConflict: 'tx_id' }
+        );
+        if (error) console.warn('sbSaveReceipt:', error.message);
         receiptIds.add(txId);
         res();
       };
@@ -728,550 +615,377 @@
     });
   }
 
-  // ── LOCALSTORAGE ─────────────────────────────────────────────────────────────
-  function loadData() {
-    try { transactions  = JSON.parse(localStorage.getItem(STORAGE_KEY)  || '[]'); } catch(e) { transactions  = []; }
-    try { withdrawals   = JSON.parse(localStorage.getItem(WITHDRAW_KEY) || '[]'); } catch(e) { withdrawals   = []; }
-    try { partnerNames  = JSON.parse(localStorage.getItem(PARTNERS_KEY) || 'null') || { p1:'Meri', p2:'Agus' }; } catch(e) {}
-  }
-  function saveData()      { localStorage.setItem(STORAGE_KEY,  JSON.stringify(transactions)); }
-  function saveWithdraws() { localStorage.setItem(WITHDRAW_KEY, JSON.stringify(withdrawals));  }
-  function savePartners()  { localStorage.setItem(PARTNERS_KEY, JSON.stringify(partnerNames)); }
-
-  // ── HELPERS ───────────────────────────────────────────────────────────────────
-  const months   = ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
-                    'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-  const freqLabel = { weekly:'Semanal', monthly:'Mensual', annual:'Anual' };
-
-  function fmt(n) {
-    const s = Math.abs(n).toLocaleString('es-AR', {minimumFractionDigits:2, maximumFractionDigits:2});
-    return (n < 0 ? '\u2212' : '') + '$ ' + s;
-  }
-  function fmtDate(iso) { const [y,m,d]=iso.split('-'); return `${d}/${m}/${y}`; }
-  function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
-  function esc(s) {
-    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  async function deleteReceiptFile(txId) {
+    await dbDel(txId);
+    const { error } = await sb.from('receipts').delete().eq('tx_id', txId);
+    if (error) console.warn('sbDeleteReceipt:', error.message);
+    receiptIds.delete(txId);
   }
 
-  function addMonths(dateStr, n) {
-    const d = new Date(dateStr + 'T00:00:00');
-    const day = d.getDate();
-    d.setDate(1); d.setMonth(d.getMonth() + n);
-    d.setDate(Math.min(day, new Date(d.getFullYear(), d.getMonth()+1, 0).getDate()));
-    return d.toISOString().slice(0,10);
-  }
-  function addDays(dateStr, n) {
-    const d = new Date(dateStr + 'T00:00:00');
-    d.setDate(d.getDate() + n);
-    return d.toISOString().slice(0,10);
-  }
-  function addYears(dateStr, n) {
-    const d = new Date(dateStr + 'T00:00:00');
-    d.setFullYear(d.getFullYear() + n);
-    return d.toISOString().slice(0,10);
-  }
-
-  function generateDates(startDate, freq, until) {
-    const dates = []; let current = startDate; let safety = 0;
-    while (current <= until && safety < 500) {
-      dates.push(current); safety++;
-      if      (freq === 'weekly')  current = addDays(current, 7);
-      else if (freq === 'monthly') current = addMonths(current, 1);
-      else if (freq === 'annual')  current = addYears(current, 1);
-      else break;
-    }
-    return dates;
-  }
-
-  // ── INVOICED SELECT ───────────────────────────────────────────────────────────
-  function updateInvoicedSelect(currentVal) {
-    const sel = document.getElementById('f-invoiced');
-    sel.innerHTML = `
-      <option value="">\u2014 Sin especificar \u2014</option>
-      <option value="${esc(partnerNames.p1)}">${esc(partnerNames.p1)}</option>
-      <option value="${esc(partnerNames.p2)}">${esc(partnerNames.p2)}</option>
-    `;
-    if (currentVal !== undefined) sel.value = currentVal;
-  }
-
-  // ── RECURRING UI ──────────────────────────────────────────────────────────────
-  function toggleRecur() {
-    const cb  = document.getElementById('f-recur');
-    const row = document.getElementById('recur-row');
-    const pan = document.getElementById('recur-panel');
-    row.classList.toggle('active', cb.checked);
-    pan.classList.toggle('visible', cb.checked);
-    if (cb.checked) updateRecurPreview();
-  }
-
-  function updateRecurPreview() {
-    const start = document.getElementById('f-date').value;
-    const freq  = document.getElementById('f-freq').value;
-    const until = document.getElementById('f-until').value;
-    const prev  = document.getElementById('recur-preview');
-    if (!start || !until || !document.getElementById('f-recur').checked) { prev.textContent = ''; return; }
-    if (until < start) { prev.textContent = '\u26a0 La fecha de fin debe ser posterior a la fecha de inicio.'; return; }
-    const dates = generateDates(start, freq, until);
-    prev.textContent = `\u2713 Se generar\u00e1n ${dates.length} movimiento${dates.length!==1?'s':''} (${freqLabel[freq]}) \u2014 del ${fmtDate(dates[0])} al ${fmtDate(dates[dates.length-1])}`;
-  }
-
-  // ── FILE UPLOAD UI ────────────────────────────────────────────────────────────
-  function onFileSelect() {
-    const fi    = document.getElementById('f-receipt');
-    const label = document.getElementById('f-receipt-label');
-    const drop  = document.getElementById('file-drop');
-    if (fi.files.length) {
-      label.textContent = '\u2713 ' + fi.files[0].name;
-      drop.classList.add('has-file');
-    } else {
-      label.textContent = 'Adjuntar imagen o PDF...';
-      drop.classList.remove('has-file');
-    }
-  }
-
-  function removeExistingFile(e) {
-    e.stopPropagation();
-    _removeFile = true;
-    document.getElementById('existing-file').style.display = 'none';
-  }
-
-  async function viewReceiptFromEdit(e) {
-    e.stopPropagation();
-    if (_editReceiptId) viewReceipt(_editReceiptId);
-  }
-
+  // ── RECEIPT VIEW ──────────────────────────────────────────────────────────────
   async function viewReceipt(txId) {
-    const rec = await dbGet(txId);
-    if (!rec) return alert('Comprobante no encontrado.');
-    const w = window.open('', '_blank');
-    if (!w) {
-      // Popup blocked — download instead
-      const a = document.createElement('a');
-      a.href = rec.data; a.download = rec.name; a.click();
-      return;
+    // Try IndexedDB first (faster)
+    let rec = await dbGet(txId);
+    if (!rec) {
+      // Fetch from Supabase
+      const { data, error } = await sb.from('receipts').select('*').eq('tx_id', txId).maybeSingle();
+      if (error || !data) return alert('Comprobante no encontrado.');
+      rec = { txId: data.tx_id, name: data.name, mimeType: data.mime_type, data: data.data };
+      await dbPut(rec); // cache locally
     }
+    const w = window.open('', '_blank');
+    if (!w) { const a = document.createElement('a'); a.href = rec.data; a.download = rec.name; a.click(); return; }
     if (rec.mimeType === 'application/pdf') {
       w.document.write(`<!DOCTYPE html><html><head><title>${esc(rec.name)}</title></head><body style="margin:0;height:100vh"><embed src="${rec.data}" width="100%" height="100%" type="application/pdf"></body></html>`);
     } else {
       w.document.write(`<!DOCTYPE html><html><head><title>${esc(rec.name)}</title></head><body style="margin:0;background:#111;display:flex;justify-content:center;min-height:100vh;padding:10px"><img src="${rec.data}" style="max-width:100%;object-fit:contain"></body></html>`);
     }
   }
-
-  // ── YEAR SELECTOR ────────────────────────────────────────────────────────────
-  function populateYears() {
-    const sel = document.getElementById('filter-year');
-    const now = new Date().getFullYear();
-    const yrs = new Set(transactions.map(t => t.date.slice(0,4)));
-    yrs.add(String(now)); yrs.add(String(now+1)); yrs.add(String(now+2));
-    [...yrs].sort().reverse().forEach(y => {
-      const o = document.createElement('option');
-      o.value = y; o.textContent = y; sel.appendChild(o);
-    });
-    sel.value = String(now);
+  async function viewReceiptFromEdit(e) { e.stopPropagation(); if (_editReceiptId) viewReceipt(_editReceiptId); }
+  function removeExistingFile(e) {
+    e.stopPropagation(); _removeFile = true;
+    document.getElementById('existing-file').style.display = 'none';
   }
 
+  // ── LOCALSTORAGE LOAD (fallback) ──────────────────────────────────────────────
+  function loadLocalData() {
+    try { transactions  = JSON.parse(localStorage.getItem(STORAGE_KEY)  || '[]'); } catch(e) { transactions  = []; }
+    try { withdrawals   = JSON.parse(localStorage.getItem(WITHDRAW_KEY) || '[]'); } catch(e) { withdrawals   = []; }
+    try { partnerNames  = JSON.parse(localStorage.getItem(PARTNERS_KEY) || 'null') || { p1:'Meri', p2:'Agus' }; } catch(e) {}
+  }
+  function saveLocal() { localStorage.setItem(STORAGE_KEY,  JSON.stringify(transactions)); }
+  function saveWithdrawsLocal() { localStorage.setItem(WITHDRAW_KEY, JSON.stringify(withdrawals)); }
+  function savePartnersLocal()  { localStorage.setItem(PARTNERS_KEY, JSON.stringify(partnerNames)); }
+
+  // ── HELPERS ───────────────────────────────────────────────────────────────────
+  const months   = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  const freqLabel = { weekly:'Semanal', monthly:'Mensual', annual:'Anual' };
+  function fmt(n) { const s = Math.abs(n).toLocaleString('es-AR',{minimumFractionDigits:2,maximumFractionDigits:2}); return (n<0?'\u2212':'')+'$ '+s; }
+  function fmtDate(iso) { const [y,m,d]=iso.split('-'); return `${d}/${m}/${y}`; }
+  function uid() { return Date.now().toString(36)+Math.random().toString(36).slice(2); }
+  function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function addMonths(ds,n){ const d=new Date(ds+'T00:00:00'),day=d.getDate(); d.setDate(1);d.setMonth(d.getMonth()+n);d.setDate(Math.min(day,new Date(d.getFullYear(),d.getMonth()+1,0).getDate())); return d.toISOString().slice(0,10); }
+  function addDays(ds,n){ const d=new Date(ds+'T00:00:00');d.setDate(d.getDate()+n);return d.toISOString().slice(0,10); }
+  function addYears(ds,n){ const d=new Date(ds+'T00:00:00');d.setFullYear(d.getFullYear()+n);return d.toISOString().slice(0,10); }
+  function generateDates(start,freq,until){ const dates=[];let cur=start,s=0; while(cur<=until&&s<500){dates.push(cur);s++;if(freq==='weekly')cur=addDays(cur,7);else if(freq==='monthly')cur=addMonths(cur,1);else if(freq==='annual')cur=addYears(cur,1);else break;} return dates; }
+
+  // ── INVOICED SELECT ───────────────────────────────────────────────────────────
+  function updateInvoicedSelect(val) {
+    const sel = document.getElementById('f-invoiced');
+    sel.innerHTML = `<option value="">\u2014 Sin especificar \u2014</option>
+      <option value="${esc(partnerNames.p1)}">${esc(partnerNames.p1)}</option>
+      <option value="${esc(partnerNames.p2)}">${esc(partnerNames.p2)}</option>`;
+    if (val !== undefined) sel.value = val;
+  }
+
+  // ── RECURRING UI ─────────────────────────────────────────────────────────────
+  function toggleRecur() {
+    const cb=document.getElementById('f-recur'),row=document.getElementById('recur-row'),pan=document.getElementById('recur-panel');
+    row.classList.toggle('active',cb.checked); pan.classList.toggle('visible',cb.checked);
+    if(cb.checked) updateRecurPreview();
+  }
+  function updateRecurPreview() {
+    const start=document.getElementById('f-date').value,freq=document.getElementById('f-freq').value,until=document.getElementById('f-until').value,prev=document.getElementById('recur-preview');
+    if(!start||!until||!document.getElementById('f-recur').checked){prev.textContent='';return;}
+    if(until<start){prev.textContent='\u26a0 La fecha de fin debe ser posterior a la fecha de inicio.';return;}
+    const dates=generateDates(start,freq,until);
+    prev.textContent=`\u2713 Se generar\u00e1n ${dates.length} movimiento${dates.length!==1?'s':''} (${freqLabel[freq]}) \u2014 del ${fmtDate(dates[0])} al ${fmtDate(dates[dates.length-1])}`;
+  }
+
+  // ── FILE UPLOAD UI ────────────────────────────────────────────────────────────
+  function onFileSelect() {
+    const fi=document.getElementById('f-receipt'),label=document.getElementById('f-receipt-label'),drop=document.getElementById('file-drop');
+    if(fi.files.length){label.textContent='\u2713 '+fi.files[0].name;drop.classList.add('has-file');}
+    else{label.textContent='Adjuntar imagen o PDF...';drop.classList.remove('has-file');}
+  }
+
+  // ── YEAR SELECTOR ─────────────────────────────────────────────────────────────
+  function populateYears() {
+    const sel=document.getElementById('filter-year'),now=new Date().getFullYear();
+    const yrs=new Set(transactions.map(t=>t.date.slice(0,4)));
+    yrs.add(String(now));yrs.add(String(now+1));yrs.add(String(now+2));
+    [...yrs].sort().reverse().forEach(y=>{const o=document.createElement('option');o.value=y;o.textContent=y;sel.appendChild(o);});
+    sel.value=String(now);
+  }
   function ensureYear(y) {
-    const sel = document.getElementById('filter-year');
-    if (![...sel.options].some(o=>o.value===y)) {
-      const o = document.createElement('option');
-      o.value = y; o.textContent = y;
-      let ins = false;
-      for (let i=0; i<sel.options.length; i++) {
-        if (y > sel.options[i].value) { sel.insertBefore(o, sel.options[i]); ins=true; break; }
-      }
-      if (!ins) sel.appendChild(o);
+    const sel=document.getElementById('filter-year');
+    if(![...sel.options].some(o=>o.value===y)){
+      const o=document.createElement('option');o.value=y;o.textContent=y;
+      let ins=false;
+      for(let i=0;i<sel.options.length;i++){if(y>sel.options[i].value){sel.insertBefore(o,sel.options[i]);ins=true;break;}}
+      if(!ins)sel.appendChild(o);
     }
   }
 
   // ── FILTER ────────────────────────────────────────────────────────────────────
   function getFiltered() {
-    const year  = document.getElementById('filter-year').value;
-    const month = document.getElementById('filter-month').value;
-    const type  = document.getElementById('filter-type').value;
-    return transactions.filter(t => {
-      const [ty,tm] = t.date.split('-');
-      if (ty !== year) return false;
-      if (month !== 'all' && tm !== month.padStart(2,'0')) return false;
-      if (type  !== 'all' && t.type !== type) return false;
+    const year=document.getElementById('filter-year').value,month=document.getElementById('filter-month').value,type=document.getElementById('filter-type').value;
+    return transactions.filter(t=>{
+      const [ty,tm]=t.date.split('-');
+      if(ty!==year)return false;
+      if(month!=='all'&&tm!==month.padStart(2,'0'))return false;
+      if(type!=='all'&&t.type!==type)return false;
       return true;
-    }).sort((a,b) => b.date.localeCompare(a.date));
+    }).sort((a,b)=>b.date.localeCompare(a.date));
   }
 
-  // ── RENDER ───────────────────────────────────────────────────────────────────
+  // ── RENDER ────────────────────────────────────────────────────────────────────
   function render() {
-    const year     = document.getElementById('filter-year').value;
-    const filtered = getFiltered();
-    const yearTx   = transactions.filter(t => t.date.startsWith(year));
+    const year=document.getElementById('filter-year').value,filtered=getFiltered();
+    const yearTx=transactions.filter(t=>t.date.startsWith(year));
+    const totalIncome=filtered.filter(t=>t.type==='income').reduce((a,t)=>a+t.amount,0);
+    const totalExpense=filtered.filter(t=>t.type==='expense').reduce((a,t)=>a+t.amount,0);
+    const annualBalance=yearTx.filter(t=>t.type==='income').reduce((a,t)=>a+t.amount,0)-yearTx.filter(t=>t.type==='expense').reduce((a,t)=>a+t.amount,0);
+    const now=new Date(),cm=String(now.getMonth()+1).padStart(2,'0'),cy=String(now.getFullYear());
+    const mTx=transactions.filter(t=>t.date.startsWith(`${cy}-${cm}`));
+    const mRes=mTx.filter(t=>t.type==='income').reduce((a,t)=>a+t.amount,0)-mTx.filter(t=>t.type==='expense').reduce((a,t)=>a+t.amount,0);
 
-    const totalIncome   = filtered.filter(t=>t.type==='income').reduce((a,t)=>a+t.amount,0);
-    const totalExpense  = filtered.filter(t=>t.type==='expense').reduce((a,t)=>a+t.amount,0);
-    const annualIncome  = yearTx.filter(t=>t.type==='income').reduce((a,t)=>a+t.amount,0);
-    const annualExpense = yearTx.filter(t=>t.type==='expense').reduce((a,t)=>a+t.amount,0);
-    const annualBalance = annualIncome - annualExpense;
+    document.getElementById('s-balance').textContent=fmt(annualBalance);
+    document.getElementById('s-balance').className='amount '+(annualBalance>=0?'pos':'neg');
+    document.getElementById('s-year').textContent=`Balance acumulado ${year}`;
+    document.getElementById('s-income').textContent=fmt(totalIncome);
+    document.getElementById('s-expense').textContent=fmt(totalExpense);
+    document.getElementById('s-month').textContent=fmt(mRes);
+    document.getElementById('s-month').className='amount '+(mRes>=0?'pos':'neg');
+    document.getElementById('s-month-label').textContent=months[now.getMonth()]+' '+cy;
 
-    const now = new Date();
-    const cm  = String(now.getMonth()+1).padStart(2,'0');
-    const cy  = String(now.getFullYear());
-    const mTx = transactions.filter(t=>t.date.startsWith(`${cy}-${cm}`));
-    const mRes = mTx.filter(t=>t.type==='income').reduce((a,t)=>a+t.amount,0)
-               - mTx.filter(t=>t.type==='expense').reduce((a,t)=>a+t.amount,0);
-
-    document.getElementById('s-balance').textContent  = fmt(annualBalance);
-    document.getElementById('s-balance').className    = 'amount '+(annualBalance>=0?'pos':'neg');
-    document.getElementById('s-year').textContent     = `Balance acumulado ${year}`;
-    document.getElementById('s-income').textContent   = fmt(totalIncome);
-    document.getElementById('s-expense').textContent  = fmt(totalExpense);
-    document.getElementById('s-month').textContent    = fmt(mRes);
-    document.getElementById('s-month').className      = 'amount '+(mRes>=0?'pos':'neg');
-    document.getElementById('s-month-label').textContent = months[now.getMonth()]+' '+cy;
-
-    const tbody = document.getElementById('tx-body');
-    const empty = document.getElementById('empty-state');
-    tbody.innerHTML = '';
-    if (!filtered.length) {
-      empty.style.display = 'block';
-    } else {
-      empty.style.display = 'none';
-      filtered.forEach(t => {
-        const tr   = document.createElement('tr');
-        const sign = t.type==='income' ? '+' : '\u2212';
-        const recurBadge = t.seriesId
-          ? `<span class="badge badge-recur">\u21bb ${freqLabel[t.freq]||'Recurrente'}</span>`
-          : '';
-        // Invoiced by badge
-        const isP1 = t.invoicedBy && t.invoicedBy === partnerNames.p1;
-        const isP2 = t.invoicedBy && t.invoicedBy === partnerNames.p2;
-        const invBadge = t.invoicedBy
-          ? `<span class="inv-badge ${isP1?'inv-p1':isP2?'inv-p2':''}">${esc(t.invoicedBy)}</span>`
-          : `<span class="inv-none">\u2014</span>`;
-        // Action buttons
-        const attBtn  = receiptIds.has(t.id)
-          ? `<button class="btn-act att" onclick="viewReceipt('${t.id}')" title="Ver comprobante">\uD83D\uDCCE</button>`
-          : '';
-        const editBtn = `<button class="btn-act" onclick="editTransaction('${t.id}')" title="Editar">\u270F\uFE0F</button>`;
-        const delBtn  = `<button class="btn-del" onclick="deleteTransaction('${t.id}')" title="Eliminar">\u2715</button>`;
-
-        tr.innerHTML = `
+    const tbody=document.getElementById('tx-body'),empty=document.getElementById('empty-state');
+    tbody.innerHTML='';
+    if(!filtered.length){empty.style.display='block';}
+    else{
+      empty.style.display='none';
+      filtered.forEach(t=>{
+        const tr=document.createElement('tr');
+        const sign=t.type==='income'?'+':'\u2212';
+        const recurBadge=t.seriesId?`<span class="badge badge-recur">\u21bb ${freqLabel[t.freq]||'Recurrente'}</span>`:'';
+        const isP1=t.invoicedBy&&t.invoicedBy===partnerNames.p1,isP2=t.invoicedBy&&t.invoicedBy===partnerNames.p2;
+        const invBadge=t.invoicedBy?`<span class="inv-badge ${isP1?'inv-p1':isP2?'inv-p2':''}">${esc(t.invoicedBy)}</span>`:`<span class="inv-none">\u2014</span>`;
+        const attBtn=receiptIds.has(t.id)?`<button class="btn-act att" onclick="viewReceipt('${t.id}')" title="Ver comprobante">\uD83D\uDCCE</button>`:'';
+        const editBtn=`<button class="btn-act" onclick="editTransaction('${t.id}')" title="Editar">\u270F\uFE0F</button>`;
+        const delBtn=`<button class="btn-del" onclick="deleteTransaction('${t.id}')" title="Eliminar">\u2715</button>`;
+        tr.innerHTML=`
           <td>${fmtDate(t.date)}</td>
-          <td>
-            <div style="font-weight:600">${esc(t.desc)}${recurBadge}</div>
-            ${t.notes ? `<div style="font-size:.76rem;color:var(--muted)">${esc(t.notes)}</div>`:''}
-          </td>
+          <td><div style="font-weight:600">${esc(t.desc)}${recurBadge}</div>${t.notes?`<div style="font-size:.76rem;color:var(--muted)">${esc(t.notes)}</div>`:''}</td>
           <td><span style="font-size:.8rem;color:var(--muted)">${esc(t.cat||'\u2014')}</span></td>
           <td class="col-inv">${invBadge}</td>
           <td><span class="badge badge-${t.type}">${t.type==='income'?'Ingreso':'Egreso'}</span></td>
           <td style="text-align:right" class="amount-${t.type}">${sign} ${fmt(t.amount)}</td>
-          <td style="text-align:right;white-space:nowrap">${attBtn}${editBtn}${delBtn}</td>
-        `;
+          <td style="text-align:right;white-space:nowrap">${attBtn}${editBtn}${delBtn}</td>`;
         tbody.appendChild(tr);
       });
     }
-    document.getElementById('count-label').textContent = `${filtered.length} registro${filtered.length!==1?'s':''}`;
+    document.getElementById('count-label').textContent=`${filtered.length} registro${filtered.length!==1?'s':''}`;
     renderMonthly(year);
-    document.getElementById('year-label-month').textContent = year;
-    document.getElementById('header-date').textContent =
-      now.toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+    document.getElementById('year-label-month').textContent=year;
+    document.getElementById('header-date').textContent=now.toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
     renderPartners();
   }
 
   function renderMonthly(year) {
-    const grid = document.getElementById('monthly-grid');
-    grid.innerHTML = '';
-    for (let m = 1; m <= 12; m++) {
-      const key = `${year}-${String(m).padStart(2,'0')}`;
-      const mt  = transactions.filter(t=>t.date.startsWith(key));
-      const inc = mt.filter(t=>t.type==='income').reduce((a,t)=>a+t.amount,0);
-      const exp = mt.filter(t=>t.type==='expense').reduce((a,t)=>a+t.amount,0);
-      const res = inc - exp;
-      const has = inc>0||exp>0;
-      const pill = document.createElement('div');
-      pill.className = 'month-pill';
-      pill.innerHTML = `
-        <div class="m-name">${months[m-1]}</div>
-        <div class="m-income">\u2191 ${fmt(inc)}</div>
-        <div class="m-expense">\u2193 ${fmt(exp)}</div>
-        <div class="m-result ${res>=0?'pos':'neg'}" style="${!has?'color:var(--muted)':''}">${has?fmt(res):'Sin datos'}</div>`;
+    const grid=document.getElementById('monthly-grid');grid.innerHTML='';
+    for(let m=1;m<=12;m++){
+      const key=`${year}-${String(m).padStart(2,'0')}`,mt=transactions.filter(t=>t.date.startsWith(key));
+      const inc=mt.filter(t=>t.type==='income').reduce((a,t)=>a+t.amount,0),exp=mt.filter(t=>t.type==='expense').reduce((a,t)=>a+t.amount,0);
+      const res=inc-exp,has=inc>0||exp>0,pill=document.createElement('div');
+      pill.className='month-pill';
+      pill.innerHTML=`<div class="m-name">${months[m-1]}</div><div class="m-income">\u2191 ${fmt(inc)}</div><div class="m-expense">\u2193 ${fmt(exp)}</div><div class="m-result ${res>=0?'pos':'neg'}" style="${!has?'color:var(--muted)':''}">${has?fmt(res):'Sin datos'}</div>`;
       grid.appendChild(pill);
     }
   }
 
   // ── MODAL OPEN (CREATE) ───────────────────────────────────────────────────────
   function openModal(type) {
-    document.getElementById('f-type').value     = type;
-    document.getElementById('f-edit-id').value  = '';
-    document.getElementById('f-date').value     = new Date().toISOString().slice(0,10);
-    document.getElementById('f-desc').value     = '';
-    document.getElementById('f-cat').value      = '';
-    document.getElementById('f-amount').value   = '';
-    document.getElementById('f-notes').value    = '';
-    document.getElementById('f-recur').checked  = false;
-    document.getElementById('f-freq').value     = 'monthly';
-    document.getElementById('f-until').value    = `${new Date().getFullYear()}-12-31`;
-    document.getElementById('recur-row').classList.remove('active');
-    document.getElementById('recur-panel').classList.remove('visible');
-    document.getElementById('recur-preview').textContent = '';
-    document.getElementById('recur-row').style.display = '';
-    document.getElementById('edit-series-note').style.display = 'none';
-
-    // File reset
-    document.getElementById('f-receipt').value = '';
-    document.getElementById('f-receipt-label').textContent = 'Adjuntar imagen o PDF...';
-    document.getElementById('file-drop').classList.remove('has-file');
-    document.getElementById('existing-file').style.display = 'none';
-    _editReceiptId = null; _removeFile = false;
-
+    document.getElementById('f-type').value=type;document.getElementById('f-edit-id').value='';
+    document.getElementById('f-date').value=new Date().toISOString().slice(0,10);
+    document.getElementById('f-desc').value='';document.getElementById('f-cat').value='';
+    document.getElementById('f-amount').value='';document.getElementById('f-notes').value='';
+    document.getElementById('f-recur').checked=false;document.getElementById('f-freq').value='monthly';
+    document.getElementById('f-until').value=`${new Date().getFullYear()}-12-31`;
+    document.getElementById('recur-row').classList.remove('active');document.getElementById('recur-panel').classList.remove('visible');
+    document.getElementById('recur-preview').textContent='';document.getElementById('recur-row').style.display='';
+    document.getElementById('edit-series-note').style.display='none';
+    document.getElementById('f-receipt').value='';document.getElementById('f-receipt-label').textContent='Adjuntar imagen o PDF...';
+    document.getElementById('file-drop').classList.remove('has-file');document.getElementById('existing-file').style.display='none';
+    _editReceiptId=null;_removeFile=false;
     updateInvoicedSelect('');
-
-    const isInc = type === 'income';
-    document.getElementById('modal-title').textContent = isInc ? '\uFF0B Registrar ingreso' : '\uFF0B Registrar egreso';
-    document.getElementById('btn-submit').className = 'btn btn-submit '+(isInc?'btn-income':'btn-expense');
+    const isInc=type==='income';
+    document.getElementById('modal-title').textContent=isInc?'\uFF0B Registrar ingreso':'\uFF0B Registrar egreso';
+    document.getElementById('btn-submit').className='btn btn-submit '+(isInc?'btn-income':'btn-expense');
     document.getElementById('modal-overlay').classList.add('open');
-    setTimeout(()=>document.getElementById('f-desc').focus(), 150);
+    setTimeout(()=>document.getElementById('f-desc').focus(),150);
   }
 
   // ── MODAL OPEN (EDIT) ─────────────────────────────────────────────────────────
   async function editTransaction(id) {
-    const tx = transactions.find(t => t.id === id);
-    if (!tx) return;
-
-    document.getElementById('f-type').value      = tx.type;
-    document.getElementById('f-edit-id').value   = tx.id;
-    document.getElementById('f-date').value      = tx.date;
-    document.getElementById('f-desc').value      = tx.desc;
-    document.getElementById('f-cat').value       = tx.cat  || '';
-    document.getElementById('f-amount').value    = tx.amount;
-    document.getElementById('f-notes').value     = tx.notes || '';
-    document.getElementById('f-recur').checked   = false;
-    document.getElementById('recur-row').classList.remove('active');
-    document.getElementById('recur-panel').classList.remove('visible');
-    document.getElementById('recur-row').style.display   = 'none';  // hide recurring in edit
-    document.getElementById('edit-series-note').style.display = tx.seriesId ? 'block' : 'none';
-
-    // File reset
-    document.getElementById('f-receipt').value = '';
-    document.getElementById('f-receipt-label').textContent = 'Adjuntar nuevo comprobante...';
+    const tx=transactions.find(t=>t.id===id);if(!tx)return;
+    document.getElementById('f-type').value=tx.type;document.getElementById('f-edit-id').value=tx.id;
+    document.getElementById('f-date').value=tx.date;document.getElementById('f-desc').value=tx.desc;
+    document.getElementById('f-cat').value=tx.cat||'';document.getElementById('f-amount').value=tx.amount;
+    document.getElementById('f-notes').value=tx.notes||'';document.getElementById('f-recur').checked=false;
+    document.getElementById('recur-row').classList.remove('active');document.getElementById('recur-panel').classList.remove('visible');
+    document.getElementById('recur-row').style.display='none';
+    document.getElementById('edit-series-note').style.display=tx.seriesId?'block':'none';
+    document.getElementById('f-receipt').value='';document.getElementById('f-receipt-label').textContent='Adjuntar nuevo comprobante...';
     document.getElementById('file-drop').classList.remove('has-file');
-    _removeFile = false;
-    _editReceiptId = id;
-
-    updateInvoicedSelect(tx.invoicedBy || '');
-
-    // Show existing receipt info if any
-    const existingDiv = document.getElementById('existing-file');
-    if (receiptIds.has(id)) {
-      const rec = await dbGet(id);
-      if (rec) {
-        document.getElementById('existing-file-name').textContent = rec.name;
-        existingDiv.style.display = 'flex';
-      } else {
-        existingDiv.style.display = 'none';
-      }
-    } else {
-      existingDiv.style.display = 'none';
-    }
-
-    const isInc = tx.type === 'income';
-    document.getElementById('modal-title').textContent = `\u270F Editar ${isInc?'ingreso':'egreso'}`;
-    document.getElementById('btn-submit').className = 'btn btn-submit '+(isInc?'btn-income':'btn-expense');
+    _removeFile=false;_editReceiptId=id;
+    updateInvoicedSelect(tx.invoicedBy||'');
+    const existingDiv=document.getElementById('existing-file');
+    if(receiptIds.has(id)){
+      const rec=await dbGet(id)||null;
+      if(rec){document.getElementById('existing-file-name').textContent=rec.name;existingDiv.style.display='flex';}
+      else existingDiv.style.display='none';
+    } else existingDiv.style.display='none';
+    const isInc=tx.type==='income';
+    document.getElementById('modal-title').textContent=`\u270F Editar ${isInc?'ingreso':'egreso'}`;
+    document.getElementById('btn-submit').className='btn btn-submit '+(isInc?'btn-income':'btn-expense');
     document.getElementById('modal-overlay').classList.add('open');
-    setTimeout(() => document.getElementById('f-desc').focus(), 150);
+    setTimeout(()=>document.getElementById('f-desc').focus(),150);
   }
 
-  function closeModal() {
-    document.getElementById('modal-overlay').classList.remove('open');
-    _removeFile = false; _editReceiptId = null;
-  }
-  function closeOnOverlay(e) { if (e.target===document.getElementById('modal-overlay')) closeModal(); }
-  document.addEventListener('keydown', e => { if(e.key==='Escape') { closeModal(); cancelDelete(); } });
+  function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); _removeFile=false;_editReceiptId=null; }
+  function closeOnOverlay(e) { if(e.target===document.getElementById('modal-overlay'))closeModal(); }
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();cancelDelete();}});
 
   // ── SAVE TRANSACTION ──────────────────────────────────────────────────────────
   async function saveTransaction() {
-    const editId     = document.getElementById('f-edit-id').value;
-    const date       = document.getElementById('f-date').value.trim();
-    const desc       = document.getElementById('f-desc').value.trim();
-    const cat        = document.getElementById('f-cat').value;
-    const amount     = parseFloat(document.getElementById('f-amount').value);
-    const notes      = document.getElementById('f-notes').value.trim();
-    const type       = document.getElementById('f-type').value;
-    const invoicedBy = document.getElementById('f-invoiced').value;
-    const fileInput  = document.getElementById('f-receipt');
+    const editId=document.getElementById('f-edit-id').value,date=document.getElementById('f-date').value.trim();
+    const desc=document.getElementById('f-desc').value.trim(),cat=document.getElementById('f-cat').value;
+    const amount=parseFloat(document.getElementById('f-amount').value),notes=document.getElementById('f-notes').value.trim();
+    const type=document.getElementById('f-type').value,invoicedBy=document.getElementById('f-invoiced').value;
+    const fi=document.getElementById('f-receipt');
+    if(!date)return alert('Por favor indic\u00e1 una fecha.');
+    if(!desc)return alert('Por favor complet\u00e1 la descripci\u00f3n.');
+    if(!amount||amount<=0)return alert('El monto debe ser mayor a 0.');
 
-    if (!date)              return alert('Por favor indic\u00e1 una fecha.');
-    if (!desc)              return alert('Por favor complet\u00e1 la descripci\u00f3n.');
-    if (!amount || amount <= 0) return alert('El monto debe ser mayor a 0.');
+    setSyncBadge('sync');
 
-    if (editId) {
-      // ── EDIT MODE ──
-      const idx = transactions.findIndex(t => t.id === editId);
-      if (idx === -1) return;
-      transactions[idx] = { ...transactions[idx], date, desc, cat, amount, notes, type, invoicedBy };
-
-      if (_removeFile) {
-        await dbDelete(editId);
-        receiptIds.delete(editId);
-        _removeFile = false;
-      } else if (fileInput.files.length) {
-        await saveReceiptFile(editId, fileInput.files[0]);
-      }
-
-      ensureYear(date.slice(0,4));
-      saveData(); closeModal(); render();
-      return;
+    if(editId) {
+      // EDIT MODE
+      const idx=transactions.findIndex(t=>t.id===editId);if(idx===-1)return;
+      transactions[idx]={...transactions[idx],date,desc,cat,amount,notes,type,invoicedBy};
+      if(_removeFile){await deleteReceiptFile(editId);_removeFile=false;}
+      else if(fi.files.length){await saveReceiptFile(editId,fi.files[0]);}
+      ensureYear(date.slice(0,4));saveLocal();
+      await sbUpsertTx([transactions[idx]]);
+      closeModal();render();return;
     }
 
-    // ── CREATE MODE ──
-    const recur = document.getElementById('f-recur').checked;
-    const freq  = document.getElementById('f-freq').value;
-    const until = document.getElementById('f-until').value;
-
-    if (recur) {
-      if (!until)       return alert('Indic\u00e1 la fecha hasta la cual se repite.');
-      if (until < date) return alert('La fecha "hasta" debe ser posterior a la fecha de inicio.');
-      const dates    = generateDates(date, freq, until);
-      const seriesId = uid();
-      const newIds   = [];
-      dates.forEach(d => {
-        const id = uid();
-        transactions.push({ id, date: d, desc, cat, amount, notes, type, invoicedBy, seriesId, freq });
-        newIds.push(id); ensureYear(d.slice(0,4));
-      });
-      if (fileInput.files.length && newIds.length) {
-        await saveReceiptFile(newIds[0], fileInput.files[0]);
-      }
-      document.getElementById('filter-year').value = date.slice(0,4);
+    // CREATE MODE
+    const recur=document.getElementById('f-recur').checked,freq=document.getElementById('f-freq').value,until=document.getElementById('f-until').value;
+    if(recur){
+      if(!until)return alert('Indic\u00e1 la fecha hasta la cual se repite.');
+      if(until<date)return alert('La fecha "hasta" debe ser posterior a la fecha de inicio.');
+      const dates=generateDates(date,freq,until),seriesId=uid(),newTxs=[],newIds=[];
+      dates.forEach(d=>{const id=uid();const t={id,date:d,desc,cat,amount,notes,type,invoicedBy,seriesId,freq};transactions.push(t);newTxs.push(t);newIds.push(id);ensureYear(d.slice(0,4));});
+      if(fi.files.length&&newIds.length)await saveReceiptFile(newIds[0],fi.files[0]);
+      document.getElementById('filter-year').value=date.slice(0,4);
+      saveLocal();await sbUpsertTx(newTxs);
     } else {
-      const id = uid();
-      transactions.push({ id, date, desc, cat, amount, notes, type, invoicedBy });
-      if (fileInput.files.length) await saveReceiptFile(id, fileInput.files[0]);
-      ensureYear(date.slice(0,4));
-      document.getElementById('filter-year').value = date.slice(0,4);
+      const id=uid(),t={id,date,desc,cat,amount,notes,type,invoicedBy};
+      transactions.push(t);
+      if(fi.files.length)await saveReceiptFile(id,fi.files[0]);
+      ensureYear(date.slice(0,4));document.getElementById('filter-year').value=date.slice(0,4);
+      saveLocal();await sbUpsertTx([t]);
     }
-
-    saveData(); closeModal(); render();
+    closeModal();render();
   }
 
   // ── DELETE TRANSACTION ────────────────────────────────────────────────────────
   function deleteTransaction(id) {
-    const tx = transactions.find(t => t.id === id);
-    if (!tx) return;
-    pendingDeleteId = id;
-    if (tx.seriesId) {
-      document.getElementById('del-overlay').classList.add('open');
-    } else {
-      if (!confirm('\u00bfEliminar este movimiento?')) { pendingDeleteId = null; return; }
-      transactions = transactions.filter(t => t.id !== id);
-      if (receiptIds.has(id)) { dbDelete(id); receiptIds.delete(id); }
-      saveData(); render(); pendingDeleteId = null;
+    const tx=transactions.find(t=>t.id===id);if(!tx)return;
+    pendingDeleteId=id;
+    if(tx.seriesId){document.getElementById('del-overlay').classList.add('open');}
+    else{
+      if(!confirm('\u00bfEliminar este movimiento?')){pendingDeleteId=null;return;}
+      transactions=transactions.filter(t=>t.id!==id);
+      if(receiptIds.has(id))deleteReceiptFile(id);
+      saveLocal();render();pendingDeleteId=null;
+      sbDeleteTx(id);
     }
   }
-
   function confirmDelete(mode) {
-    if (!pendingDeleteId) return;
-    const tx = transactions.find(t => t.id === pendingDeleteId);
-    if (mode === 'series' && tx && tx.seriesId) {
-      const sIds = transactions.filter(t=>t.seriesId===tx.seriesId).map(t=>t.id);
-      transactions = transactions.filter(t => t.seriesId !== tx.seriesId);
-      sIds.forEach(id => { if(receiptIds.has(id)) { dbDelete(id); receiptIds.delete(id); } });
+    if(!pendingDeleteId)return;
+    const tx=transactions.find(t=>t.id===pendingDeleteId);
+    if(mode==='series'&&tx&&tx.seriesId){
+      const sIds=transactions.filter(t=>t.seriesId===tx.seriesId).map(t=>t.id);
+      transactions=transactions.filter(t=>t.seriesId!==tx.seriesId);
+      sIds.forEach(id=>{if(receiptIds.has(id))deleteReceiptFile(id);});
+      saveLocal();render();sbDeleteSeries(tx.seriesId);
     } else {
-      transactions = transactions.filter(t => t.id !== pendingDeleteId);
-      if (receiptIds.has(pendingDeleteId)) { dbDelete(pendingDeleteId); receiptIds.delete(pendingDeleteId); }
+      transactions=transactions.filter(t=>t.id!==pendingDeleteId);
+      if(receiptIds.has(pendingDeleteId))deleteReceiptFile(pendingDeleteId);
+      saveLocal();render();sbDeleteTx(pendingDeleteId);
     }
-    saveData(); render();
-    pendingDeleteId = null;
-    document.getElementById('del-overlay').classList.remove('open');
+    pendingDeleteId=null;document.getElementById('del-overlay').classList.remove('open');
   }
-
-  function cancelDelete() {
-    pendingDeleteId = null;
-    document.getElementById('del-overlay').classList.remove('open');
-  }
+  function cancelDelete(){pendingDeleteId=null;document.getElementById('del-overlay').classList.remove('open');}
 
   // ── EXPORT CSV ────────────────────────────────────────────────────────────────
   function exportCSV() {
-    const filtered = getFiltered();
-    if (!filtered.length) return alert('No hay datos para exportar en el per\u00edodo seleccionado.');
-    const header = ['Fecha','Descripci\u00f3n','Categor\u00eda','Facturado por','Tipo','Monto','Notas','Recurrente','Frecuencia'];
-    const rows = filtered.map(t => [
-      t.date, `"${t.desc}"`, `"${t.cat||''}"`, `"${t.invoicedBy||''}"`,
-      t.type==='income'?'Ingreso':'Egreso',
-      t.amount.toFixed(2), `"${t.notes||''}"`,
-      t.seriesId?'S\u00ed':'No', t.freq?freqLabel[t.freq]:''
-    ]);
-    const csv  = [header,...rows].map(r=>r.join(',')).join('\n');
-    const blob = new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});
-    const url  = URL.createObjectURL(blob);
-    const a    = document.createElement('a');
-    a.href = url; a.download = `iys-finanzas-${document.getElementById('filter-year').value}.csv`;
-    a.click(); URL.revokeObjectURL(url);
+    const filtered=getFiltered();
+    if(!filtered.length)return alert('No hay datos para exportar en el per\u00edodo seleccionado.');
+    const header=['Fecha','Descripci\u00f3n','Categor\u00eda','Facturado por','Tipo','Monto','Notas','Recurrente','Frecuencia'];
+    const rows=filtered.map(t=>[t.date,`"${t.desc}"`,`"${t.cat||''}"`,`"${t.invoicedBy||''}"`,t.type==='income'?'Ingreso':'Egreso',t.amount.toFixed(2),`"${t.notes||''}"`,t.seriesId?'S\u00ed':'No',t.freq?freqLabel[t.freq]:'']);
+    const csv=[header,...rows].map(r=>r.join(',')).join('\n');
+    const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});
+    const url=URL.createObjectURL(blob);const a=document.createElement('a');
+    a.href=url;a.download=`iys-finanzas-${document.getElementById('filter-year').value}.csv`;a.click();URL.revokeObjectURL(url);
   }
 
-  // ── EXPORT JSON (full backup with receipts) ───────────────────────────────────
+  // ── EXPORT JSON ───────────────────────────────────────────────────────────────
   async function exportJSON() {
-    const receipts = await dbGetAll();
-    const backup = {
-      v: 2,
-      app: 'If You Skill Finanzas',
-      exportedAt: new Date().toISOString(),
-      transactions,
-      withdrawals,
-      partnerNames,
-      receipts
-    };
-    const json = JSON.stringify(backup);
-    const blob = new Blob([json], { type: 'application/json' });
-    const url  = URL.createObjectURL(blob);
-    const a    = document.createElement('a');
-    a.href = url;
-    a.download = `iys-backup-${new Date().toISOString().slice(0,10)}.json`;
-    a.click(); URL.revokeObjectURL(url);
-    alert('\u2705 Backup exportado. Guard\u00e1 ese archivo en Google Drive o Dropbox para tenerlo disponible en cualquier computadora.');
+    const receipts=await dbGetAll();
+    const backup={v:2,app:'If You Skill Finanzas',exportedAt:new Date().toISOString(),transactions,withdrawals,partnerNames,receipts};
+    const blob=new Blob([JSON.stringify(backup)],{type:'application/json'});
+    const url=URL.createObjectURL(blob);const a=document.createElement('a');
+    a.href=url;a.download=`iys-backup-${new Date().toISOString().slice(0,10)}.json`;a.click();URL.revokeObjectURL(url);
+    alert('\u2705 Backup exportado. Guard\u00e1lo en Google Drive o Dropbox como respaldo extra.');
   }
 
-  // ── IMPORT JSON (restore backup) ──────────────────────────────────────────────
+  // ── IMPORT JSON ───────────────────────────────────────────────────────────────
   function importJSON() {
-    const input = document.createElement('input');
-    input.type = 'file'; input.accept = '.json';
-    input.onchange = e => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = async ev => {
-        try {
-          const d = JSON.parse(ev.target.result);
-          if (!d.transactions) throw new Error('El archivo no es un backup v\u00e1lido de If You Skill.');
-          const fecha = d.exportedAt
-            ? new Date(d.exportedAt).toLocaleDateString('es-AR', {day:'numeric',month:'long',year:'numeric'})
-            : 'fecha desconocida';
-          const ok = confirm(
-            `\u00bfImportar backup del ${fecha}?\n` +
-            `\u2022 ${d.transactions.length} movimientos\n` +
-            `\u2022 ${(d.receipts||[]).length} comprobantes adjuntos\n\n` +
-            `\u26a0 Esto REEMPLAZAR\u00c1 todos los datos actuales. \u00bfContinu\u00e1r?`
-          );
-          if (!ok) return;
-
-          transactions = d.transactions  || [];
-          withdrawals  = d.withdrawals   || [];
-          partnerNames = d.partnerNames  || { p1:'Meri', p2:'Agus' };
-          saveData(); saveWithdraws(); savePartners();
-
-          if (d.receipts && d.receipts.length) {
+    const input=document.createElement('input');input.type='file';input.accept='.json';
+    input.onchange=e=>{
+      const file=e.target.files[0];if(!file)return;
+      const reader=new FileReader();
+      reader.onload=async ev=>{
+        try{
+          const d=JSON.parse(ev.target.result);
+          if(!d.transactions)throw new Error('El archivo no es un backup v\u00e1lido de If You Skill.');
+          const fecha=d.exportedAt?new Date(d.exportedAt).toLocaleDateString('es-AR',{day:'numeric',month:'long',year:'numeric'}):'fecha desconocida';
+          const ok=confirm(`\u00bfImportar backup del ${fecha}?\n\u2022 ${d.transactions.length} movimientos\n\u2022 ${(d.receipts||[]).length} comprobantes adjuntos\n\n\u26a0 Esto REEMPLAZAR\u00c1 todos los datos actuales.`);
+          if(!ok)return;
+          transactions=d.transactions||[];withdrawals=d.withdrawals||[];partnerNames=d.partnerNames||{p1:'Meri',p2:'Agus'};
+          saveLocal();saveWithdrawsLocal();savePartnersLocal();
+          // Sync all to Supabase
+          setSyncBadge('sync');
+          await sb.from('transactions').delete().neq('id','__never__');
+          await sb.from('withdrawals').delete().neq('id','__never__');
+          await sbSavePartners();
+          if(transactions.length)await sbUpsertTx(transactions);
+          if(withdrawals.length){for(const w of withdrawals)await sbUpsertWithdrawal(w);}
+          if(d.receipts&&d.receipts.length){
             await dbClearAll();
-            for (const r of d.receipts) await dbPut(r);
-            receiptIds = new Set(d.receipts.map(r => r.txId));
-          } else {
-            await dbClearAll();
-            receiptIds = new Set();
+            for(const r of d.receipts){
+              await dbPut({txId:r.txId||r.tx_id,name:r.name,mimeType:r.mimeType||r.mime_type,data:r.data});
+              await sb.from('receipts').upsert({tx_id:r.txId||r.tx_id,name:r.name,mime_type:r.mimeType||r.mime_type,data:r.data},{onConflict:'tx_id'});
+            }
+            receiptIds=new Set(d.receipts.map(r=>r.txId||r.tx_id));
           }
-
-          // Rebuild year selector
-          document.getElementById('filter-year').innerHTML = '';
-          populateYears();
-          render();
-          alert(`\u2705 Backup importado: ${transactions.length} movimientos restaurados.`);
-        } catch(err) {
-          alert('Error al importar: ' + err.message);
-        }
+          setSyncBadge('ok');
+                   if(withdrawals.length){for(const w of withdrawals)await sbUpsertWithdrawal(w);}
+          if(d.receipts&&d.receipts.length){
+            await dbClearAll();
+            for(const r of d.receipts){
+              await dbPut({txId:r.txId||r.tx_id,name:r.name,mimeType:r.mimeType||r.mime_type,data:r.data});
+              await sb.from('receipts').upsert({tx_id:r.txId||r.tx_id,name:r.name,mime_type:r.mimeType||r.mime_type,data:r.data},{onConflict:'tx_id'});
+            }
+            receiptIds=new Set(d.receipts.map(r=>r.txId||r.tx_id));
+          }
+          setSyncBadge('ok');
+          document.getElementById('filter-year').innerHTML='';populateYears();render();
+          alert(`\u2705 Backup importado y sincronizado en la nube: ${transactions.length} movimientos restaurados.`);
+        }catch(err){alert('Error al importar: '+err.message);}
       };
       reader.readAsText(file);
     };
@@ -1280,123 +994,126 @@
 
   // ── PARTNER DISTRIBUTION ──────────────────────────────────────────────────────
   function renderPartners() {
-    const year  = document.getElementById('filter-year').value;
-    const month = document.getElementById('filter-month').value;
-
-    const periodTx = transactions.filter(t => {
-      const [ty, tm] = t.date.split('-');
-      if (ty !== year) return false;
-      if (month !== 'all' && tm !== month.padStart(2,'0')) return false;
-      return true;
-    });
-    const netProfit = periodTx.filter(t=>t.type==='income').reduce((a,t)=>a+t.amount,0)
-                    - periodTx.filter(t=>t.type==='expense').reduce((a,t)=>a+t.amount,0);
-    const share = Math.max(netProfit, 0) / 2;
-
-    const periodW = withdrawals.filter(w => {
-      const [wy, wm] = w.date.split('-');
-      if (wy !== year) return false;
-      if (month !== 'all' && wm !== month.padStart(2,'0')) return false;
-      return true;
-    });
-
-    [1, 2].forEach(p => {
-      const pKey    = `p${p}`;
-      const name    = partnerNames[pKey] || `Socia ${p}`;
-      const initials = name.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase() || `S${p}`;
-      const pW      = periodW.filter(w => w.partner === p);
-      const totalW  = pW.reduce((a,w)=>a+w.amount,0);
-      const balance = share - totalW;
-
-      document.getElementById(`p${p}-avatar`).textContent    = initials;
-      document.getElementById(`p${p}-name`).textContent      = name;
-      document.getElementById(`p${p}-share`).textContent     = fmt(share);
-      document.getElementById(`p${p}-withdrawn`).textContent = fmt(totalW);
-
-      const chip = document.getElementById(`p${p}-chip`);
-      if (Math.abs(balance) < 1) {
-        chip.textContent = '\u2713 Al d\u00eda';
-        chip.className   = 'balance-chip even';
-      } else if (balance > 0) {
-        chip.textContent = `Puede retirar ${fmt(balance)}`;
-        chip.className   = 'balance-chip ok';
-      } else {
-        chip.textContent = `Retir\u00f3 de m\u00e1s: ${fmt(Math.abs(balance))}`;
-        chip.className   = 'balance-chip debt';
-      }
-
-      const hist   = document.getElementById(`p${p}-history`);
-      const recent = [...pW].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
-      if (!recent.length) { hist.innerHTML = ''; return; }
-      hist.innerHTML = `<div class="wh-title">\u00daltimos retiros</div>` +
-        recent.map(w => `
-          <div class="withdraw-item">
-            <span class="wi-date">${fmtDate(w.date)}</span>
-            <span>${esc(w.notes||'\u2014')}</span>
-            <span class="wi-amt">${fmt(w.amount)}</span>
-            <button class="wi-del" onclick="deleteWithdraw('${w.id}')" title="Eliminar">\u2715</button>
-          </div>`).join('');
+    const year=document.getElementById('filter-year').value,month=document.getElementById('filter-month').value;
+    const periodTx=transactions.filter(t=>{const [ty,tm]=t.date.split('-');if(ty!==year)return false;if(month!=='all'&&tm!==month.padStart(2,'0'))return false;return true;});
+    const netProfit=periodTx.filter(t=>t.type==='income').reduce((a,t)=>a+t.amount,0)-periodTx.filter(t=>t.type==='expense').reduce((a,t)=>a+t.amount,0);
+    const share=Math.max(netProfit,0)/2;
+    const periodW=withdrawals.filter(w=>{const [wy,wm]=w.date.split('-');if(wy!==year)return false;if(month!=='all'&&wm!==month.padStart(2,'0'))return false;return true;});
+    [1,2].forEach(p=>{
+      const name=partnerNames[`p${p}`]||`Socia ${p}`,initials=name.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase()||`S${p}`;
+      const pW=periodW.filter(w=>w.partner===p),totalW=pW.reduce((a,w)=>a+w.amount,0),balance=share-totalW;
+      document.getElementById(`p${p}-avatar`).textContent=initials;
+      document.getElementById(`p${p}-name`).textContent=name;
+      document.getElementById(`p${p}-share`).textContent=fmt(share);
+      document.getElementById(`p${p}-withdrawn`).textContent=fmt(totalW);
+      const chip=document.getElementById(`p${p}-chip`);
+      if(Math.abs(balance)<1){chip.textContent='\u2713 Al d\u00eda';chip.className='balance-chip even';}
+      else if(balance>0){chip.textContent=`Puede retirar ${fmt(balance)}`;chip.className='balance-chip ok';}
+      else{chip.textContent=`Retir\u00f3 de m\u00e1s: ${fmt(Math.abs(balance))}`;chip.className='balance-chip debt';}
+      const hist=document.getElementById(`p${p}-history`);
+      const recent=[...pW].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
+      if(!recent.length){hist.innerHTML='';return;}
+      hist.innerHTML=`<div class="wh-title">\u00daltimos retiros</div>`+recent.map(w=>`<div class="withdraw-item"><span class="wi-date">${fmtDate(w.date)}</span><span>${esc(w.notes||'\u2014')}</span><span class="wi-amt">${fmt(w.amount)}</span><button class="wi-del" onclick="deleteWithdraw('${w.id}')" title="Eliminar">\u2715</button></div>`).join('');
     });
   }
 
   // ── WITHDRAW MODAL ────────────────────────────────────────────────────────────
   function openWithdraw(partner) {
-    document.getElementById('w-partner').value = partner;
-    document.getElementById('w-date').value    = new Date().toISOString().slice(0,10);
-    document.getElementById('w-amount').value  = '';
-    document.getElementById('w-notes').value   = '';
-    const name = partnerNames[`p${partner}`] || `Socia ${partner}`;
-    document.getElementById('withdraw-title').textContent = `\uD83D\uDCB8 Retiro de ${name}`;
+    document.getElementById('w-partner').value=partner;document.getElementById('w-date').value=new Date().toISOString().slice(0,10);
+    document.getElementById('w-amount').value='';document.getElementById('w-notes').value='';
+    const name=partnerNames[`p${partner}`]||`Socia ${partner}`;
+    document.getElementById('withdraw-title').textContent=`\uD83D\uDCB8 Retiro de ${name}`;
     document.getElementById('withdraw-overlay').classList.add('open');
-    setTimeout(()=>document.getElementById('w-amount').focus(), 150);
+    setTimeout(()=>document.getElementById('w-amount').focus(),150);
   }
-  function closeWithdraw() { document.getElementById('withdraw-overlay').classList.remove('open'); }
-  function closeWithdrawOnOverlay(e) { if(e.target===document.getElementById('withdraw-overlay')) closeWithdraw(); }
+  function closeWithdraw(){document.getElementById('withdraw-overlay').classList.remove('open');}
+  function closeWithdrawOnOverlay(e){if(e.target===document.getElementById('withdraw-overlay'))closeWithdraw();}
 
-  function saveWithdraw() {
-    const partner = parseInt(document.getElementById('w-partner').value);
-    const date    = document.getElementById('w-date').value;
-    const amount  = parseFloat(document.getElementById('w-amount').value);
-    const notes   = document.getElementById('w-notes').value.trim();
-    if (!date)            return alert('Indic\u00e1 una fecha.');
-    if (!amount||amount<=0) return alert('El monto debe ser mayor a 0.');
-    withdrawals.push({ id: uid(), partner, date, amount, notes });
-    saveWithdraws(); closeWithdraw(); renderPartners();
+  async function saveWithdraw() {
+    const partner=parseInt(document.getElementById('w-partner').value),date=document.getElementById('w-date').value;
+    const amount=parseFloat(document.getElementById('w-amount').value),notes=document.getElementById('w-notes').value.trim();
+    if(!date)return alert('Indic\u00e1 una fecha.');
+    if(!amount||amount<=0)return alert('El monto debe ser mayor a 0.');
+    const w={id:uid(),partner,date,amount,notes};
+    withdrawals.push(w);saveWithdrawsLocal();closeWithdraw();renderPartners();
+    await sbUpsertWithdrawal(w);
   }
 
-  function deleteWithdraw(id) {
-    if (!confirm('\u00bfEliminar este retiro?')) return;
-    withdrawals = withdrawals.filter(w => w.id !== id);
-    saveWithdraws(); renderPartners();
+  async function deleteWithdraw(id) {
+    if(!confirm('\u00bfEliminar este retiro?'))return;
+    withdrawals=withdrawals.filter(w=>w.id!==id);saveWithdrawsLocal();renderPartners();
+    await sbDeleteWithdrawal(id);
   }
 
   // ── PARTNER CONFIG ────────────────────────────────────────────────────────────
-  function openPartnerConfig() {
-    document.getElementById('cfg-p1').value = partnerNames.p1;
-    document.getElementById('cfg-p2').value = partnerNames.p2;
-    document.getElementById('partner-cfg-overlay').classList.add('open');
-    setTimeout(()=>document.getElementById('cfg-p1').focus(), 150);
-  }
-  function closeCfg() { document.getElementById('partner-cfg-overlay').classList.remove('open'); }
-  function closeCfgOnOverlay(e) { if(e.target===document.getElementById('partner-cfg-overlay')) closeCfg(); }
+  function openPartnerConfig(){document.getElementById('cfg-p1').value=partnerNames.p1;document.getElementById('cfg-p2').value=partnerNames.p2;document.getElementById('partner-cfg-overlay').classList.add('open');setTimeout(()=>document.getElementById('cfg-p1').focus(),150);}
+  function closeCfg(){document.getElementById('partner-cfg-overlay').classList.remove('open');}
+  function closeCfgOnOverlay(e){if(e.target===document.getElementById('partner-cfg-overlay'))closeCfg();}
 
-  function savePartnerNames() {
-    const n1 = document.getElementById('cfg-p1').value.trim();
-    const n2 = document.getElementById('cfg-p2').value.trim();
-    if (!n1 || !n2) return alert('Complet\u00e1 ambos nombres.');
-    partnerNames = { p1: n1, p2: n2 };
-    savePartners(); closeCfg(); renderPartners();
-    updateInvoicedSelect();  // refresh options with new names
+  async function savePartnerNames() {
+    const n1=document.getElementById('cfg-p1').value.trim(),n2=document.getElementById('cfg-p2').value.trim();
+    if(!n1||!n2)return alert('Complet\u00e1 ambos nombres.');
+    partnerNames={p1:n1,p2:n2};savePartnersLocal();closeCfg();renderPartners();updateInvoicedSelect();
+    await sbSavePartners();
+  }
+
+  // ── REALTIME ──────────────────────────────────────────────────────────────────
+  function setupRealtime() {
+    sb.channel('iys_realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'transactions' },  handleRemoteChange)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'withdrawals' },   handleRemoteChange)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'partner_names' }, handleRemoteChange)
+      .subscribe(status => {
+        if(status === 'SUBSCRIBED') setSyncBadge('ok');
+        else if(status === 'CLOSED') setSyncBadge('offline');
+      });
+  }
+
+  let _reloadPending = false;
+  async function handleRemoteChange() {
+    const modalOpen = document.getElementById('modal-overlay').classList.contains('open');
+    if (modalOpen) { _reloadPending = true; return; }
+    await loadFromSupabase();
+    populateYears(); updateInvoicedSelect(); render();
   }
 
   // ── INIT ──────────────────────────────────────────────────────────────────────
   async function init() {
     try { await openDB(); } catch(e) { console.warn('IndexedDB no disponible:', e); }
-    loadData();
-    await loadReceiptIds();
+
+    // Load from Supabase
+    const ok = await loadFromSupabase();
+
+    if (!ok) {
+      // Supabase unreachable — use local cache
+      loadLocalData();
+    } else if (transactions.length === 0 && withdrawals.length === 0) {
+      // Supabase empty — check local storage for migration
+      loadLocalData();
+      if (transactions.length > 0 || withdrawals.length > 0) {
+        const migrate = confirm(
+          '\u2601 Tenés datos guardados localmente.\n\u00bfQueriS migrarlos a la nube para que Meri y Agus puedan verlos desde cualquier dispositivo?'
+        );
+        if (migrate) {
+          setSyncBadge('sync');
+          if(transactions.length) await sbUpsertTx(transactions);
+          for(const w of withdrawals) await sbUpsertWithdrawal(w);
+          await sbSavePartners();
+          // Migrate local receipts
+          const localRecs = await dbGetAll();
+          for(const r of localRecs){
+            await sb.from('receipts').upsert({tx_id:r.txId,name:r.name,mime_type:r.mimeType,data:r.data},{onConflict:'tx_id'});
+          }
+          setSyncBadge('ok');
+          alert('\u2705 Datos migrados a la nube correctamente.');
+        }
+      }
+    }
+
     populateYears();
     updateInvoicedSelect();
     render();
+    setupRealtime();
   }
 
   init();
